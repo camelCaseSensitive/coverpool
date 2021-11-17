@@ -5,7 +5,8 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>Welcom to Coverpool</h1>
+        <h1>Welcome to Coverpool</h1>
+        <p>a website for musicians to share, discover and cover!</p>
       </header>
     </div>
   );
