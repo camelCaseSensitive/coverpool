@@ -1,0 +1,29 @@
+.Profile {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    background: lightgray;
+}
+
+.ProfileDetails {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin: 0 0 10px 0;
+}
+
+.UserDetail {
+    margin: 0 10px 0 10px;
+    padding: 0;
+}
+
+.Username {
+    margin: 0 10px 0 10px;
+}
+
+.Profile img {
+    height: 80%;
+    width: auto;
+    border-radius: 20%;
+    margin: 10px
+}

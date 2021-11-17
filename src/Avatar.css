@@ -1,0 +1,15 @@
+.Avatar {
+    width: 50px;
+    height: 50px;
+    margin: 20px 10px 10px 10px;
+    border-radius: 100%;
+    background: green;
+    transition: 0.1s;
+    
+    border: 2px solid gray;
+}
+.Avatar:hover {
+    box-shadow: 0px 0px 10px rgb(37, 119, 212);
+    transition: 0.1s;
+    cursor: pointer;
+}
