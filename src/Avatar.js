@@ -3,9 +3,20 @@ import React from "react"
 import {onAuthStateChanged} from "firebase/auth";
 import './Avatar.css'
 
+
+
 function Avatar(props) {
-    console.log("Rendering avatar: " +props.auth.currentUser)
+    console.log(props.propic)
+    console.log(props.propic)
+
+    function signout() {
+        props.auth.signOut().then(() => {console.log("signedout")});
+        document.getElementById("logout-button").style.visibility = "hidden";
+    }
+
     function handleClick() {
+    // document.getElementById('logout-button').onclick = props.auth.signOut().then(() => {console.log("signedout")});
+
         if(!props.auth.currentUser){
             props.signIn(props.auth, props.provider);
             props.getRedirect(props.auth)
@@ -28,10 +39,22 @@ function Avatar(props) {
                 const credential = props.googleAuth.credentialFromError(error);
                 // ...
             })
+        } else {
+            // props.auth.signOut().then(() => {
+            //     console.log("signed out")
+            // })
+            if(document.getElementById("logout-button").style.visibility == "hidden") {
+                document.getElementById("logout-button").style.visibility = "visible";
+            } else {
+                document.getElementById("logout-button").style.visibility = "hidden";
+            }
         }
     }
     return(
-        <img src={props.propic ? props.propic : propic} className="Avatar" onClick={handleClick}/>
+        <div>
+            <img src={props.propic ? props.propic : propic} className="Avatar" onClick={handleClick}/>
+            <button id="logout-button" onClick = {signout}>Logout</button>
+        </div>
     );
 }
 

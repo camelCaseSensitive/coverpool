@@ -27,3 +27,12 @@
     border-radius: 20%;
     margin: 10px
 }
+
+.upload {
+    background: rgb(219, 219, 219);
+    padding: 10px;
+    /* display: flex;
+    justify-content: center; */
+    width: 500px;
+    margin: auto;
+}
