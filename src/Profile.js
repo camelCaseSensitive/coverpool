@@ -3,12 +3,50 @@ import LoadingBar from './LoadingBar.js';
 import React from 'react';
 import './Profile.css'
 import { getStorage, ref, uploadBytesResumable, getDownloadURL, listAll} from "firebase/storage";
+import { onAuthStateChanged} from "firebase/auth";
+
 
 function Profile(props) {
     let covers = <p>No covers yet.</p>
     const [percent, setPercent] = React.useState(null);
     const [originalUpload, setOriginalUpload] = React.useState(null);
     const [songName, setSongName] = React.useState(null);
+    const [mySongs, setMySongs] = React.useState(null);
+    let mySongsSet = false;
+
+    onAuthStateChanged(props.auth, () => {
+      if(props.auth.currentUser){
+        console.log("we have a current user")
+        const storage = getStorage();
+        const listRef = ref(storage, props.auth.currentUser.uid + '/originals');
+        listAll(listRef)
+        .then((res) => {
+          res.items.forEach((itemRef) => {
+            let songPath = itemRef._location.path_.split('/')
+            getDownloadURL(itemRef).then((url) => {
+              if(props.songList.length < res.items.length) props.songList.push(<SongPlayer songSource={url} songName = {songPath[songPath.length-1]} key = {url} />)
+            })
+            .catch((error) => {
+              console.log(error)
+            })
+            // setSongs(songList)
+            // All the items under listRef.
+          });
+        }).then(() => {
+          if(!props.songs) props.setSongs(props.songList)
+          console.log(props.songs)
+        }).then(() => {
+          if(mySongsSet == false && props.songs && props.songs.length > 0){
+            setMySongs(props.songs)
+            mySongsSet = true;
+          }
+        }).catch((error) => {
+          // Uh-oh, an error occurred!
+        });
+      }
+      
+    });
+
   
     function handleFile(e){
       let file = e.target.files[0];
@@ -45,15 +83,18 @@ function Profile(props) {
           // https://firebase.google.com/docs/storage/web/handle-errors
           switch (error.code) {
             case 'storage/unauthorized':
+              console.log("unauthorized")
               // User doesn't have permission to access the object
               break;
             case 'storage/canceled':
+              console.log("cancaled")
               // User canceled the upload
               break;
 
             // ...
 
             case 'storage/unknown':
+              console.log("unknown")
               // Unknown error occurred, inspect error.serverResponse
               break;
           }
@@ -82,13 +123,13 @@ function Profile(props) {
           </div>
           <h2>Originals</h2>
           <ul>
-            {props.songs}
+            {mySongs}
           </ul>
           <SongPlayer songSource={originalUpload} songName = {songName} />
           {/* <SongPlayer songSource={props.songSource} songName = {songName} /> */}
           <div className="upload">
             <p>Upload an original:</p>
-            <input type="file" id="myFile" name="filename" onChange={(e) => handleFile(e)}></input>
+            <input type="file" id="myFile" allow="audio/mp3" name="filename" onChange={(e) => handleFile(e)}></input>
             <LoadingBar percent = {percent} />
           </div>
           

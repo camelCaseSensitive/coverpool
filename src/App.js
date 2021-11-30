@@ -40,42 +40,15 @@ let songList = [];
 
 function App() {
   const [propic, setPropic] = React.useState(auth.currentUser ? auth.currentUser.providerData[0].photoURL : null);
-  // const [songs, setSongs] = React.useState(null);
+  const [songs, setSongs] = React.useState(null);
   
   onAuthStateChanged(auth, () => {
-    console.log("Auth state changed")
     setPropic(auth.currentUser ? auth.currentUser.providerData[0].photoURL : null) 
-    if(auth.currentUser){
-      console.log("we have a current user")
-      const storage = getStorage();
-      const listRef = ref(storage, auth.currentUser.uid + '/originals');
-      listAll(listRef)
-      .then((res) => {
-        res.items.forEach((itemRef) => {
-          let songPath = itemRef._location.path_.split('/')
-          getDownloadURL(itemRef).then((url) => {
-            if(songList.length < res.items.length) songList.push(<SongPlayer songSource={url} songName = {songPath[songPath.length-1]} key = {url} />)
-          })
-          .catch((error) => {
-            console.log(error)
-          })
-          // setSongs(songList)
-          // All the items under listRef.
-        });
-      }).then(() => {
-        console.log("setting song list")
-        console.log(songList)
-        // setSongs(songList)
-      }).catch((error) => {
-        // Uh-oh, an error occurred!
-      });
-    }
-    
   });
   return (
     <div className="App">
       <Navbar auth={auth} provider={provider} signIn={signIn} googleAuth={googleAuth} getRedirect={getRedirect} propic={propic} setPropic={setPropic}/>
-      <Profile auth={auth} propic={propic} songs={songList}/>
+      <Profile auth={auth} propic={propic} songs={songs} setSongs={setSongs} songList={songList}/>
     </div>
   );
 }
