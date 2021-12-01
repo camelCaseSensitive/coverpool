@@ -15,18 +15,25 @@ function Profile(props) {
     let mySongsSet = false;
     const [numberOfOriginals, setNumberOfOriginals] = React.useState(null);
 
+    let songsComponentArray = [];
+
     onAuthStateChanged(props.auth, () => {
-      if(props.auth.currentUser){
-        // console.log("we have a current user")
+      if(props.auth.currentUser && !mySongsSet){
+        console.log("Auth state change")
         const storage = getStorage();
         const listRef = ref(storage, props.auth.currentUser.uid + '/originals');
         listAll(listRef)
         .then((res) => {
           setNumberOfOriginals(res.items.length);
+          let i = 0;
+          songsComponentArray = []
           res.items.forEach((itemRef) => {
+            console.log(i);
+            i++;
             let songPath = itemRef._location.path_.split('/')
             getDownloadURL(itemRef).then((url) => {
-              if(props.songList.length < res.items.length) props.songList.push(<SongPlayer songSource={url} songName = {songPath[songPath.length-1]} key = {url} />)
+              songsComponentArray.push(<SongPlayer songSource={url} songName = {songPath[songPath.length-1]} key = {url} />)
+              // if(props.songList.length < res.items.length) props.songList.push(<SongPlayer songSource={url} songName = {songPath[songPath.length-1]} key = {url} />)
             })
             .catch((error) => {
               console.log(error)
@@ -35,8 +42,8 @@ function Profile(props) {
             // All the items under listRef.
           });
         }).then(() => {
-          if(!props.songs) props.setSongs(props.songList)
-          // console.log(props.songs)
+          // if(!props.songs) props.setSongs(props.songList)
+          if(!props.songs) props.setSongs(songsComponentArray)
         }).then(() => {
           if(mySongsSet == false && props.songs && props.songs.length == numberOfOriginals){
             setMySongs(props.songs)

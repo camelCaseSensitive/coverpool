@@ -6,17 +6,12 @@ import './Avatar.css'
 
 
 function Avatar(props) {
-    console.log(props.propic)
-    console.log(props.propic)
-
     function signout() {
         props.auth.signOut().then(() => {console.log("signedout")});
         document.getElementById("logout-button").style.visibility = "hidden";
     }
 
     function handleClick() {
-    // document.getElementById('logout-button').onclick = props.auth.signOut().then(() => {console.log("signedout")});
-
         if(!props.auth.currentUser){
             props.signIn(props.auth, props.provider);
             props.getRedirect(props.auth)
@@ -41,9 +36,7 @@ function Avatar(props) {
             })
         } else {
             if(props.feed == true) props.setFeed(false)
-            // props.auth.signOut().then(() => {
-            //     console.log("signed out")
-            // })
+  
             if(document.getElementById("logout-button").style.visibility == "hidden") {
                 document.getElementById("logout-button").style.visibility = "visible";
             } else {
