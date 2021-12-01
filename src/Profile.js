@@ -13,14 +13,16 @@ function Profile(props) {
     const [songName, setSongName] = React.useState(null);
     const [mySongs, setMySongs] = React.useState(null);
     let mySongsSet = false;
+    const [numberOfOriginals, setNumberOfOriginals] = React.useState(null);
 
     onAuthStateChanged(props.auth, () => {
       if(props.auth.currentUser){
-        console.log("we have a current user")
+        // console.log("we have a current user")
         const storage = getStorage();
         const listRef = ref(storage, props.auth.currentUser.uid + '/originals');
         listAll(listRef)
         .then((res) => {
+          setNumberOfOriginals(res.items.length);
           res.items.forEach((itemRef) => {
             let songPath = itemRef._location.path_.split('/')
             getDownloadURL(itemRef).then((url) => {
@@ -34,9 +36,9 @@ function Profile(props) {
           });
         }).then(() => {
           if(!props.songs) props.setSongs(props.songList)
-          console.log(props.songs)
+          // console.log(props.songs)
         }).then(() => {
-          if(mySongsSet == false && props.songs && props.songs.length > 0){
+          if(mySongsSet == false && props.songs && props.songs.length == numberOfOriginals){
             setMySongs(props.songs)
             mySongsSet = true;
           }
@@ -51,8 +53,8 @@ function Profile(props) {
     function handleFile(e){
       let file = e.target.files[0];
       // var file = evt.target.files[0];
-      console.log("File: " + file)
-      console.log(props.auth.currentUser.uid)
+      // console.log("File: " + file)
+      // console.log(props.auth.currentUser.uid)
       setSongName(file.name);
       const storage = getStorage();
 
@@ -68,7 +70,7 @@ function Profile(props) {
           // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
           const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           setPercent(progress)
-          console.log('Upload is ' + progress + '% done');
+          // console.log('Upload is ' + progress + '% done');
           switch (snapshot.state) {
             case 'paused':
               console.log('Upload is paused');
@@ -116,7 +118,7 @@ function Profile(props) {
             <div><img src={props.propic ? props.propic : null} /></div>
             <div className="ProfileDetails">
                 <h1 className="Username">{props.auth.currentUser.providerData[0].displayName}</h1>
-                <p className="UserDetail">Originals: 1</p>
+                <p className="UserDetail">Originals: {numberOfOriginals}</p>
                 <p className="UserDetail">Covers: 0</p>
                 <p className="UserDetail">Strikes: 0</p>
             </div>
