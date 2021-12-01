@@ -3,6 +3,7 @@ import SongPlayer from './SongPlayer.js';
 import './App.css';
 import Navbar from './Navbar.js';
 import Profile from './Profile.js';
+import Feed from './Feed.js'
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAuth, signInWithRedirect, GoogleAuthProvider, getRedirectResult, onAuthStateChanged} from "firebase/auth";
@@ -41,16 +42,27 @@ let songList = [];
 function App() {
   const [propic, setPropic] = React.useState(auth.currentUser ? auth.currentUser.providerData[0].photoURL : null);
   const [songs, setSongs] = React.useState(null);
+  const [feed, setFeed] = React.useState(true);
   
   onAuthStateChanged(auth, () => {
     setPropic(auth.currentUser ? auth.currentUser.providerData[0].photoURL : null) 
   });
-  return (
-    <div className="App">
-      <Navbar auth={auth} provider={provider} signIn={signIn} googleAuth={googleAuth} getRedirect={getRedirect} propic={propic} setPropic={setPropic}/>
-      <Profile auth={auth} propic={propic} songs={songs} setSongs={setSongs} songList={songList}/>
-    </div>
-  );
+  if(feed){
+    return (
+      <div className="App">
+        <Navbar auth={auth} provider={provider} signIn={signIn} googleAuth={googleAuth} getRedirect={getRedirect} propic={propic} setPropic={setPropic} feed={feed} setFeed={setFeed}/>
+        <Feed />
+      </div>
+    );
+  } else {
+    return(
+      <div className="App">
+        <Navbar auth={auth} provider={provider} signIn={signIn} googleAuth={googleAuth} getRedirect={getRedirect} propic={propic} setPropic={setPropic} feed={feed} setFeed={setFeed}/>
+        <Profile auth={auth} propic={propic} songs={songs} setSongs={setSongs} songList={songList}/>
+      </div>
+    )
+  }
+  
 }
 
 export default App;

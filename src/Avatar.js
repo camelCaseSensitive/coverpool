@@ -40,6 +40,7 @@ function Avatar(props) {
                 // ...
             })
         } else {
+            if(props.feed == true) props.setFeed(false)
             // props.auth.signOut().then(() => {
             //     console.log("signed out")
             // })
