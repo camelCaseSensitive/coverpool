@@ -35,23 +35,27 @@ const provider = new GoogleAuthProvider();
 const signIn = signInWithRedirect;
 const storage = getStorage();
 let songList = [];
-// const pathReference = ref(storage, 'You Found It.mp3')
-// const pathReference = ref(storage, 'AnryGuiltar/arabesque.mp3')
-// console.log(pathReference._location.path_);
 
 function App() {
   const [propic, setPropic] = React.useState(auth.currentUser ? auth.currentUser.providerData[0].photoURL : null);
   const [songs, setSongs] = React.useState(null);
   const [feed, setFeed] = React.useState(true);
+  const [featuredSong, setFeaturedSong] = React.useState(null);
   
-  onAuthStateChanged(auth, () => {
+  React.useEffect(() => {
     setPropic(auth.currentUser ? auth.currentUser.providerData[0].photoURL : null) 
-  });
+  }, [auth.currentUser])
+
+  // onAuthStateChanged(auth, () => {
+  //   setPropic(auth.currentUser ? auth.currentUser.providerData[0].photoURL : null) 
+  // });
+
+
   if(feed){
     return (
       <div className="App">
         <Navbar auth={auth} provider={provider} signIn={signIn} googleAuth={googleAuth} getRedirect={getRedirect} propic={propic} setPropic={setPropic} feed={feed} setFeed={setFeed}/>
-        <Feed />
+        <Feed featuredSong={featuredSong} setFeaturedSong={setFeaturedSong}/>
       </div>
     );
   } else {

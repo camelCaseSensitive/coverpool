@@ -17,16 +17,22 @@ function Profile(props) {
 
     let songsComponentArray = [];
 
-    onAuthStateChanged(props.auth, () => {
-      if(props.auth.currentUser && !mySongsSet){
-        console.log("Auth state change")
+    // React.useEffect(() => {
+    //   console.log("songsComponentArray has changed")
+    //   console.log(songsComponentArray)
+    // }, [songsComponentArray])
+
+    React.useEffect(() => {
+      console.log("Profile noticed an auth change")
+      // if(props.auth.currentUser && !mySongsSet){
+        // console.log("Auth state change")
         const storage = getStorage();
         const listRef = ref(storage, props.auth.currentUser.uid + '/originals');
+        // console.log(listRef)
         listAll(listRef)
         .then((res) => {
           setNumberOfOriginals(res.items.length);
           let i = 0;
-          songsComponentArray = []
           res.items.forEach((itemRef) => {
             console.log(i);
             i++;
@@ -35,6 +41,12 @@ function Profile(props) {
               songsComponentArray.push(<SongPlayer songSource={url} songName = {songPath[songPath.length-1]} key = {url} />)
               // if(props.songList.length < res.items.length) props.songList.push(<SongPlayer songSource={url} songName = {songPath[songPath.length-1]} key = {url} />)
             })
+            .then(() => {
+              if(songsComponentArray.length == res.items.length){
+                console.log(songsComponentArray)
+                setMySongs(songsComponentArray)
+              } 
+            })
             .catch((error) => {
               console.log(error)
             })
@@ -42,20 +54,16 @@ function Profile(props) {
             // All the items under listRef.
           });
         }).then(() => {
-          // if(!props.songs) props.setSongs(props.songList)
-          if(!props.songs) props.setSongs(songsComponentArray)
-        }).then(() => {
-          if(mySongsSet == false && props.songs && props.songs.length == numberOfOriginals){
-            setMySongs(props.songs)
-            mySongsSet = true;
-          }
+          // props.setSongs(songsComponentArray)
+          // console.log("Then after res")
+          // console.log(songsComponentArray)
+          // setMySongs(songsComponentArray)
         }).catch((error) => {
           // Uh-oh, an error occurred!
         });
-      }
-      
-    });
+    }, [props.auth.currentUser]);
 
+    
   
     function handleFile(e){
       let file = e.target.files[0];
@@ -118,7 +126,7 @@ function Profile(props) {
       );
     }
 
-    if (props.propic && props.songs){
+    if (props.propic){
       return (
         <div>
           <div className="Profile">
