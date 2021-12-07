@@ -1,0 +1,9 @@
+.ProfileBanner {
+    display: flex;
+    justify-content: center;
+}
+
+.ProPic {
+    border-radius: 50%;
+    height: 50px;
+}

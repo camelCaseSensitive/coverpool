@@ -7,7 +7,7 @@ import Feed from './Feed.js'
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAuth, signInWithRedirect, GoogleAuthProvider, getRedirectResult, onAuthStateChanged} from "firebase/auth";
-import { getFirestore } from "firebase/firestore"
+import { getFirestore, collection, doc, getDocs, getDoc, setDoc, updateDoc} from "firebase/firestore"
 import { getStorage, ref , getDownloadURL, listAll } from "firebase/storage"
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -38,24 +38,36 @@ let songList = [];
 
 function App() {
   const [propic, setPropic] = React.useState(auth.currentUser ? auth.currentUser.providerData[0].photoURL : null);
+  // console.log(db)
+ 
+  
   const [songs, setSongs] = React.useState(null);
   const [feed, setFeed] = React.useState(true);
   const [featuredSong, setFeaturedSong] = React.useState(null);
   
   React.useEffect(() => {
     setPropic(auth.currentUser ? auth.currentUser.providerData[0].photoURL : null) 
+    if(auth.currentUser){
+      const userRef = collection(db, "users");
+      setDoc(doc(userRef, auth.currentUser.displayName), {
+        uid: auth.currentUser.uid,
+        name: auth.currentUser.displayName,
+        propic: auth.currentUser.providerData[0].photoURL,
+      });
+      updateDoc(doc(userRef, auth.currentUser.displayName), {
+        uid: auth.currentUser.uid,
+        name: auth.currentUser.displayName,
+        propic: auth.currentUser.providerData[0].photoURL,
+      });
+    }
   }, [auth.currentUser])
-
-  // onAuthStateChanged(auth, () => {
-  //   setPropic(auth.currentUser ? auth.currentUser.providerData[0].photoURL : null) 
-  // });
 
 
   if(feed){
     return (
       <div className="App">
         <Navbar auth={auth} provider={provider} signIn={signIn} googleAuth={googleAuth} getRedirect={getRedirect} propic={propic} setPropic={setPropic} feed={feed} setFeed={setFeed}/>
-        <Feed featuredSong={featuredSong} setFeaturedSong={setFeaturedSong}/>
+        <Feed featuredSong={featuredSong} setFeaturedSong={setFeaturedSong} db={db}/>
       </div>
     );
   } else {

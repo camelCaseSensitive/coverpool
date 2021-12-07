@@ -5,6 +5,11 @@ import './Profile.css'
 import { getStorage, ref, uploadBytesResumable, getDownloadURL, listAll} from "firebase/storage";
 import { onAuthStateChanged} from "firebase/auth";
 
+//TODO:
+// When user logs in add their pro-pic link and display name to files under their uid.
+// Use these files to populate the users profile so that it can be accessed by another user
+// Also use this for the home feed
+
 
 function Profile(props) {
     let covers = <p>No covers yet.</p>
@@ -12,64 +17,41 @@ function Profile(props) {
     const [originalUpload, setOriginalUpload] = React.useState(null);
     const [songName, setSongName] = React.useState(null);
     const [mySongs, setMySongs] = React.useState(null);
-    let mySongsSet = false;
     const [numberOfOriginals, setNumberOfOriginals] = React.useState(null);
 
     let songsComponentArray = [];
 
-    // React.useEffect(() => {
-    //   console.log("songsComponentArray has changed")
-    //   console.log(songsComponentArray)
-    // }, [songsComponentArray])
-
     React.useEffect(() => {
       console.log("Profile noticed an auth change")
-      // if(props.auth.currentUser && !mySongsSet){
-        // console.log("Auth state change")
-        const storage = getStorage();
-        const listRef = ref(storage, props.auth.currentUser.uid + '/originals');
-        // console.log(listRef)
-        listAll(listRef)
-        .then((res) => {
-          setNumberOfOriginals(res.items.length);
-          let i = 0;
-          res.items.forEach((itemRef) => {
-            console.log(i);
-            i++;
-            let songPath = itemRef._location.path_.split('/')
-            getDownloadURL(itemRef).then((url) => {
-              songsComponentArray.push(<SongPlayer songSource={url} songName = {songPath[songPath.length-1]} key = {url} />)
-              // if(props.songList.length < res.items.length) props.songList.push(<SongPlayer songSource={url} songName = {songPath[songPath.length-1]} key = {url} />)
-            })
-            .then(() => {
-              if(songsComponentArray.length == res.items.length){
-                console.log(songsComponentArray)
-                setMySongs(songsComponentArray)
-              } 
-            })
-            .catch((error) => {
-              console.log(error)
-            })
-            // setSongs(songList)
-            // All the items under listRef.
-          });
-        }).then(() => {
-          // props.setSongs(songsComponentArray)
-          // console.log("Then after res")
-          // console.log(songsComponentArray)
-          // setMySongs(songsComponentArray)
-        }).catch((error) => {
-          // Uh-oh, an error occurred!
+      const storage = getStorage();
+      const listRef = ref(storage, props.auth.currentUser.uid + '/originals');
+      listAll(listRef)
+      .then((res) => {
+        setNumberOfOriginals(res.items.length);
+        res.items.forEach((itemRef) => {
+          let songPath = itemRef._location.path_.split('/')
+          getDownloadURL(itemRef).then((url) => {
+            songsComponentArray.push(<SongPlayer songSource={url} songName = {songPath[songPath.length-1]} key = {url} />);
+          })
+          .then(() => {
+            if(songsComponentArray.length == res.items.length){
+              // console.log(songsComponentArray)
+              setMySongs(songsComponentArray)
+            } 
+          })
+          .catch((error) => {
+            console.log(error)
+          })
         });
+      }).catch((error) => {
+        // Uh-oh, an error occurred!
+      });
     }, [props.auth.currentUser]);
 
     
   
     function handleFile(e){
       let file = e.target.files[0];
-      // var file = evt.target.files[0];
-      // console.log("File: " + file)
-      // console.log(props.auth.currentUser.uid)
       setSongName(file.name);
       const storage = getStorage();
 
@@ -143,7 +125,6 @@ function Profile(props) {
             {mySongs}
           </ul>
           <SongPlayer songSource={originalUpload} songName = {songName} />
-          {/* <SongPlayer songSource={props.songSource} songName = {songName} /> */}
           <div className="upload">
             <p>Upload an original:</p>
             <input type="file" id="myFile" allow="audio/mp3" name="filename" onChange={(e) => handleFile(e)}></input>
