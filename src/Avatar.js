@@ -36,6 +36,7 @@ function Avatar(props) {
             })
         } else {
             if(props.feed == true) props.setFeed(false)
+            if(props.myProfile == false) props.setMyProfile(true);
   
             if(document.getElementById("logout-button").style.visibility == "hidden") {
                 document.getElementById("logout-button").style.visibility = "visible";

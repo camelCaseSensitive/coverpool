@@ -39,10 +39,10 @@ let songList = [];
 function App() {
   const [propic, setPropic] = React.useState(auth.currentUser ? auth.currentUser.providerData[0].photoURL : null);
   // console.log(db)
- 
-  
   const [songs, setSongs] = React.useState(null);
   const [feed, setFeed] = React.useState(true);
+  const [myProfile, setMyProfile] = React.useState(false);
+  const [profile, setProfile] = React.useState(false);
   const [featuredSong, setFeaturedSong] = React.useState(null);
   
   React.useEffect(() => {
@@ -66,15 +66,23 @@ function App() {
   if(feed){
     return (
       <div className="App">
-        <Navbar auth={auth} provider={provider} signIn={signIn} googleAuth={googleAuth} getRedirect={getRedirect} propic={propic} setPropic={setPropic} feed={feed} setFeed={setFeed}/>
-        <Feed featuredSong={featuredSong} setFeaturedSong={setFeaturedSong} db={db}/>
+        <Navbar auth={auth} provider={provider} signIn={signIn} googleAuth={googleAuth} getRedirect={getRedirect} propic={propic} setPropic={setPropic} feed={feed} setFeed={setFeed} myProfile={myProfile} setMyProfile={setMyProfile}/>
+        <Feed featuredSong={featuredSong} setFeaturedSong={setFeaturedSong} db={db} feed={feed} setFeed={setFeed} myProfile={myProfile} setMyProfile={setMyProfile} profile={profile} setProfile={setProfile}/>
       </div>
     );
-  } else {
+  } else if(myProfile){
     return(
       <div className="App">
-        <Navbar auth={auth} provider={provider} signIn={signIn} googleAuth={googleAuth} getRedirect={getRedirect} propic={propic} setPropic={setPropic} feed={feed} setFeed={setFeed}/>
+        <Navbar auth={auth} provider={provider} signIn={signIn} googleAuth={googleAuth} getRedirect={getRedirect} propic={propic} setPropic={setPropic} feed={feed} setFeed={setFeed} myProfile={myProfile} setMyProfile={setMyProfile}/>
         <Profile auth={auth} propic={propic} songs={songs} setSongs={setSongs} songList={songList}/>
+      </div>
+    )
+  }
+  else{
+    return(
+      <div className="App">
+        <Navbar auth={auth} provider={provider} signIn={signIn} googleAuth={googleAuth} getRedirect={getRedirect} propic={propic} setPropic={setPropic} feed={feed} setFeed={setFeed} myProfile={myProfile} setMyProfile={setMyProfile}/>
+        <p>{profile}</p>
       </div>
     )
   }

@@ -64,7 +64,7 @@ function Feed(props) {
             let name = doc._document.data.value.mapValue.fields.name.stringValue;
             let pic = doc._document.data.value.mapValue.fields.propic.stringValue;
             console.log(pic)
-            profs.push(<ProfileBanner pic={pic} name={name}/>)
+            profs.push(<ProfileBanner pic={pic} name={name} feed={props.feed} setFeed={props.setFeed} myProfile={props.myProfile} setMyProfile={props.setMyProfile} profile={props.profile} setProfile={props.setProfile}/>)
           });
           if(!profiles) setProfiles(profs)
       })
