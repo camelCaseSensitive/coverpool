@@ -14,6 +14,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth, signInWithRedirect, GoogleAuthProvider, getRedirectResult, onAuthStateChanged} from "firebase/auth";
 import { getFirestore, collection, doc, getDocs, getDoc, setDoc, updateDoc} from "firebase/firestore"
 import { getStorage, ref, uploadBytesResumable, getDownloadURL, listAll} from "firebase/storage";
+import { getDatabase, ref as dbRef, set as dbSet, get as dbGet, update, onValue} from 'firebase/database'
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -30,11 +31,18 @@ const firebaseConfig = {
 // Initialize Firebase
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
+const rtdb = getDatabase();
+console.log(rtdb)
 const auth = getAuth();
 const googleAuth = GoogleAuthProvider;
 const getRedirect = getRedirectResult;
 const provider = new GoogleAuthProvider();
 const signIn = signInWithRedirect;
+
+let loggedIn = false;
+let newUsername = "";
+// let usernameAvailable = true;
+let globalUserName = null;
 
 // function login(setUser) {
 //   console.log("LOGIN!")
@@ -64,38 +72,52 @@ const signIn = signInWithRedirect;
 //   }
 // }
 
-
 function App() {
   const [user, setUser] = React.useState(auth.currentUser);
   const [userProPic, setUserProPic] = React.useState(auth.currentUser ? auth.currentUser.providerData[0].photoURL : null)
-  const [userName, setUserName] = React.useState(auth.currentUser ? auth.currentUser.providerData[0].displayName : null)
+  // const [userName, setUserName] = React.useState(auth.currentUser ? auth.currentUser.providerData[0].displayName : null)
+  const [userName, setUserName] = React.useState(null)
+  const [hasUsername, setHasUsername] = React.useState("tbd");
+  const [usernameAvailable, setUsernameAvailable] = React.useState("")
+  const [availabilityMessage, setAvailabilityMessage] = React.useState(true)
   // console.log("Current user was " + auth.currentUser)
 
   // React.useEffect(() => {
-  //   if(auth.currentUser){
-  //     setUser(auth.currentUser) 
-  //     setUserProPic(auth.currentUser.providerData[0].photoURL)
-  //     setUserName(auth.currentUser.providerData[0].displayName)
-  //   }
-  // }, [auth.currentUser])
+  //   console.log("WELL FUCK, BETTER LOG IN")
+  //   setFuck("fuck")
+  // }, [hasUsername])
 
   auth.onAuthStateChanged(function (user) {
+    if(user){
+      loggedIn = true;
       console.log(user.uid)
+      console.log("You are now logged in")
       setUser(user) 
       setUserProPic(user.providerData[0].photoURL)
-      setUserName(user.providerData[0].displayName)
+      // setUserName(user.providerData[0].displayName)
 
       const userRef = collection(db, "users");
-      // setDoc(doc(userRef, auth.currentUser.displayName), {
-      //   uid: auth.currentUser.uid,
-      //   name: auth.currentUser.displayName,
-      //   propic: auth.currentUser.providerData[0].photoURL,
-      // });
-      updateDoc(doc(userRef, auth.currentUser.displayName), {
-        uid: auth.currentUser.uid,
-        name: auth.currentUser.displayName,
-        propic: auth.currentUser.providerData[0].photoURL,
-      });
+      const yourUsername = dbRef(rtdb, "/users/" + auth.currentUser.uid);
+      dbGet(yourUsername).then((res) => {
+        if(res._node.value_){
+          console.log(res._node.value_)
+          setUserName(res._node.value_)
+        } else {
+          setHasUsername(false)
+          console.log("Need to create a username")
+        }
+      })
+    
+      // If this user already has a username in the realtime database
+      // update their info
+      if(userName){
+        updateDoc(doc(userRef, userName), {
+          uid: auth.currentUser.uid,
+          name: auth.currentUser.displayName,
+          propic: auth.currentUser.providerData[0].photoURL,
+        });
+      }
+    }
   });
 
   function login() {
@@ -109,11 +131,12 @@ function App() {
             const credential = googleAuth.credentialFromResult(result);
             const token = credential.accessToken;
             // The signed-in user info.
-            onAuthStateChanged(() => {
-              // setUser(auth.currentUser) 
-              // setUserProPic(auth.currentUser.providerData[0].photoURL)
-              // setUserName(auth.currentUser.providerData[0].displayName)
-            });
+            // onAuthStateChanged(() => {
+            //   console.log("YOU HAV JUST LOGGED IN")
+            //   // setUser(auth.currentUser) 
+            //   // setUserProPic(auth.currentUser.providerData[0].photoURL)
+            //   // setUserName(auth.currentUser.providerData[0].displayName)
+            // });
         }).catch((error) => {
             console.log("There was an error")
             // Handle Errors here.
@@ -137,53 +160,88 @@ function App() {
     setUserName(null)
   }
 
-  return (
-    <Router>
+  if(hasUsername === false){
+    return(
       <div>
-        <img src={userProPic}/>
-        {/* <h1>{userName}</h1> */}
-        <nav>
-          <ul>
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/about">About</Link>
-            </li>
-            <li>
-              <Link to="/users">Users</Link>
-            </li>
-            <li>
-              <Link to="/uploadsong">Upload Orginal</Link>
-            </li>
-            <li>
-              <Link to="/uploadcover">Upload Cover</Link>
-            </li>
-          </ul>
-          <button onClick={login}> Login </button>
-          <button onClick={logout}> Logout </button>
-        </nav>
-
-        <Routes>
-          <Route path="/about" element={<About/>}></Route>
-          <Route path="/users" element={<Users/>}> </Route>
-          <Route path="/uploadsong" element={<UploadSong/>}></Route>
-          <Route path="/uploadcover" element={<UploadCover/>}></Route>
-          <Route path="/user/:username" element={<UserProfile/>}> </Route>
-          <Route path="/user/:username/:content" element={<UserContent/>}> </Route>
-          <Route path="/user/:username/:originals" element={<UserContent/>}> </Route>
-          <Route path="/user/:username/:originals/:song" element={<UserOriginal/>}> </Route>
-          <Route path="/user/:username/:covers" element={<UserContent/>}> </Route>
-          <Route path="/user/:username/:covers/:artist" element={<UserContent/>}> </Route>
-          <Route path="/user/:username/:covers/:artist/:song" element={<UserCover/>}> </Route>
-          <Route path="/user/:username/:likes" element={<UserContent/>}> </Route>
-          <Route path="/user/:username/:matches" element={<UserContent/>}> </Route>
-          <Route path="/user/:username/:matches/:match" element={<UserContent/>}> </Route>
-          <Route path="/" element={<Home/>}> </Route>
-        </Routes>
+        <p>Create a username for your account</p>
+        <input id="newusername" onKeyUp={() => {
+          console.log("keyup")
+          newUsername = document.getElementById("newusername").value;
+          dbGet(dbRef(rtdb, "/users/")).then((res) => {
+            setUsernameAvailable(true)
+            setAvailabilityMessage("")
+            res.forEach((username) => {
+              if(username._node.value_ == newUsername){
+                setUsernameAvailable(false)
+                setAvailabilityMessage("Sorry that username is already taken")
+                console.log("MATCH")
+              }
+            })
+          })
+      }}></input>
+      <p>{availabilityMessage}</p>
+        <button onClick={() => {
+          dbSet(dbRef(rtdb, "/users/" + auth.currentUser.uid), newUsername)
+          setUserName(newUsername)
+          setHasUsername(true)
+          const userRef = collection(db, "users");
+          setDoc(doc(userRef, newUsername), {
+            uid: auth.currentUser.uid,
+            name: auth.currentUser.displayName,
+            propic: auth.currentUser.providerData[0].photoURL,
+          });
+        }} disabled={!usernameAvailable}> Create Account</button>
       </div>
-    </Router>
-  );
+    )
+  } else {
+    return (
+      <Router>
+        <div>
+          <img src={userProPic}/>
+          {/* <h1>{userName}</h1> */}
+          <nav>
+            <ul>
+              <li>
+                <Link to="/">Home</Link>
+              </li>
+              <li>
+                <Link to="/about">About</Link>
+              </li>
+              <li>
+                <Link to="/users">Users</Link>
+              </li>
+              <li>
+                <Link to="/uploadsong">Upload Orginal</Link>
+              </li>
+              <li>
+                <Link to="/uploadcover">Upload Cover</Link>
+              </li>
+            </ul>
+            <button onClick={login}> Login </button>
+            <button onClick={logout}> Logout </button>
+          </nav>
+
+          <Routes>
+            <Route path="/about" element={<About/>}></Route>
+            <Route path="/users" element={<Users/>}> </Route>
+            <Route path="/uploadsong" element={<UploadSong/>}></Route>
+            <Route path="/uploadcover" element={<UploadCover/>}></Route>
+            <Route path="/user/:username" element={<UserProfile/>}> </Route>
+            <Route path="/user/:username/:content" element={<UserContent/>}> </Route>
+            <Route path="/user/:username/:originals" element={<UserContent/>}> </Route>
+            <Route path="/user/:username/:originals/:song" element={<UserOriginal/>}> </Route>
+            <Route path="/user/:username/:covers" element={<UserContent/>}> </Route>
+            <Route path="/user/:username/:covers/:artist" element={<UserContent/>}> </Route>
+            <Route path="/user/:username/:covers/:artist/:song" element={<UserCover/>}> </Route>
+            <Route path="/user/:username/:likes" element={<UserContent/>}> </Route>
+            <Route path="/user/:username/:matches" element={<UserContent/>}> </Route>
+            <Route path="/user/:username/:matches/:match" element={<UserContent/>}> </Route>
+            <Route path="/" element={<Home/>}> </Route>
+          </Routes>
+        </div>
+      </Router>
+    );
+  }
 }
 
 class Home extends React.Component {
