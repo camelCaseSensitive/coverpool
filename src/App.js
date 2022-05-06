@@ -9,8 +9,6 @@ import { initializeApp } from "firebase/app";
 import { getAuth, signInWithRedirect, GoogleAuthProvider, getRedirectResult, onAuthStateChanged} from "firebase/auth";
 import { getFirestore, collection, doc, getDocs, getDoc, setDoc, updateDoc} from "firebase/firestore"
 import { getStorage, ref , getDownloadURL, listAll } from "firebase/storage"
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -38,7 +36,6 @@ let songList = [];
 
 function App() {
   const [propic, setPropic] = React.useState(auth.currentUser ? auth.currentUser.providerData[0].photoURL : null);
-  // console.log(db)
   const [songs, setSongs] = React.useState(null);
   const [feed, setFeed] = React.useState(true);
   const [myProfile, setMyProfile] = React.useState(false);
@@ -48,6 +45,7 @@ function App() {
   React.useEffect(() => {
     setPropic(auth.currentUser ? auth.currentUser.providerData[0].photoURL : null) 
     if(auth.currentUser){
+      setPropic(auth.currentUser ? auth.currentUser.providerData[0].photoURL : null) 
       const userRef = collection(db, "users");
       setDoc(doc(userRef, auth.currentUser.displayName), {
         uid: auth.currentUser.uid,

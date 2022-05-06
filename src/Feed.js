@@ -12,8 +12,6 @@ let bigList = [];
 let bigListLength = 0;
 let counter = 0;
 
-
-
 function Feed(props) {
     console.log("Feed rendered")
     const [myFeed, setMyFeed] = React.useState(null)
@@ -73,13 +71,13 @@ function Feed(props) {
     if(myFeed){
       return (
         <div>
-          <h1>Activity!</h1>
+          <h1>Test!</h1>
           <ul>
             {profiles}
           </ul>
-          <ul>
+          {/* <ul>
             {myFeed}
-          </ul>
+          </ul> */}
         </div>
       )
     }
