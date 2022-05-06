@@ -1,14 +1,19 @@
-import React from 'react'
-import SongPlayer from './SongPlayer.js';
+import React from 'react';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Link
+} from "react-router-dom";
+import { useParams } from 'react-router';
 import './App.css';
-import Navbar from './Navbar.js';
-import Profile from './Profile.js';
-import Feed from './Feed.js'
-// Import the functions you need from the SDKs you need
+import { render } from 'react-dom';
+
+// FIREBASE
 import { initializeApp } from "firebase/app";
 import { getAuth, signInWithRedirect, GoogleAuthProvider, getRedirectResult, onAuthStateChanged} from "firebase/auth";
 import { getFirestore, collection, doc, getDocs, getDoc, setDoc, updateDoc} from "firebase/firestore"
-import { getStorage, ref , getDownloadURL, listAll } from "firebase/storage"
+import { getStorage, ref, uploadBytesResumable, getDownloadURL, listAll} from "firebase/storage";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -23,68 +28,748 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const firebaseApp = initializeApp(firebaseConfig);
+const db = getFirestore(firebaseApp);
 const auth = getAuth();
-let user;
 const googleAuth = GoogleAuthProvider;
 const getRedirect = getRedirectResult;
 const provider = new GoogleAuthProvider();
 const signIn = signInWithRedirect;
-const storage = getStorage();
-let songList = [];
+
+// function login(setUser) {
+//   console.log("LOGIN!")
+//   console.log(auth.currentUser)
+//   if(!auth.currentUser){
+//       signIn(auth, provider);
+//       getRedirect(auth)
+//       .then((result) => {
+//           // This gives you a Google Access Token. You can use it to access Google APIs.
+//           const credential = googleAuth.credentialFromResult(result);
+//           const token = credential.accessToken;
+//           // The signed-in user info.
+//           onAuthStateChanged(() => setUser(auth.currentUser)  );
+//       }).catch((error) => {
+//           console.log("There was an error")
+//           // Handle Errors here.
+//           const errorCode = error.code;
+//           const errorMessage = error.message;
+//           // The email of the user's account used.
+//           const email = error.email;
+//           // The AuthCredential type that was used.
+//           const credential = googleAuth.credentialFromError(error);
+//           // ...
+//       })
+//   } else {
+//     setUser(auth.currentUser) 
+//   }
+// }
+
 
 function App() {
-  const [propic, setPropic] = React.useState(auth.currentUser ? auth.currentUser.providerData[0].photoURL : null);
-  const [songs, setSongs] = React.useState(null);
-  const [feed, setFeed] = React.useState(true);
-  const [myProfile, setMyProfile] = React.useState(false);
-  const [profile, setProfile] = React.useState(false);
-  const [featuredSong, setFeaturedSong] = React.useState(null);
-  
-  React.useEffect(() => {
-    setPropic(auth.currentUser ? auth.currentUser.providerData[0].photoURL : null) 
-    if(auth.currentUser){
-      setPropic(auth.currentUser ? auth.currentUser.providerData[0].photoURL : null) 
+  const [user, setUser] = React.useState(auth.currentUser);
+  const [userProPic, setUserProPic] = React.useState(auth.currentUser ? auth.currentUser.providerData[0].photoURL : null)
+  const [userName, setUserName] = React.useState(auth.currentUser ? auth.currentUser.providerData[0].displayName : null)
+  // console.log("Current user was " + auth.currentUser)
+
+  // React.useEffect(() => {
+  //   if(auth.currentUser){
+  //     setUser(auth.currentUser) 
+  //     setUserProPic(auth.currentUser.providerData[0].photoURL)
+  //     setUserName(auth.currentUser.providerData[0].displayName)
+  //   }
+  // }, [auth.currentUser])
+
+  auth.onAuthStateChanged(function (user) {
+      console.log(user.uid)
+      setUser(user) 
+      setUserProPic(user.providerData[0].photoURL)
+      setUserName(user.providerData[0].displayName)
+
       const userRef = collection(db, "users");
-      setDoc(doc(userRef, auth.currentUser.displayName), {
-        uid: auth.currentUser.uid,
-        name: auth.currentUser.displayName,
-        propic: auth.currentUser.providerData[0].photoURL,
-      });
+      // setDoc(doc(userRef, auth.currentUser.displayName), {
+      //   uid: auth.currentUser.uid,
+      //   name: auth.currentUser.displayName,
+      //   propic: auth.currentUser.providerData[0].photoURL,
+      // });
       updateDoc(doc(userRef, auth.currentUser.displayName), {
         uid: auth.currentUser.uid,
         name: auth.currentUser.displayName,
         propic: auth.currentUser.providerData[0].photoURL,
       });
+  });
+
+  function login() {
+    console.log("LOGIN!")
+    console.log(auth.currentUser)
+    if(!auth.currentUser){
+        signIn(auth, provider);
+        getRedirect(auth)
+        .then((result) => {
+            // This gives you a Google Access Token. You can use it to access Google APIs.
+            const credential = googleAuth.credentialFromResult(result);
+            const token = credential.accessToken;
+            // The signed-in user info.
+            onAuthStateChanged(() => {
+              // setUser(auth.currentUser) 
+              // setUserProPic(auth.currentUser.providerData[0].photoURL)
+              // setUserName(auth.currentUser.providerData[0].displayName)
+            });
+        }).catch((error) => {
+            console.log("There was an error")
+            // Handle Errors here.
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            // The email of the user's account used.
+            const email = error.email;
+            // The AuthCredential type that was used.
+            const credential = googleAuth.credentialFromError(error);
+            // ...
+        })
+    } else {
+      setUser(auth.currentUser) 
     }
-  }, [auth.currentUser])
+  }
 
+  function logout() {
+    auth.signOut().then(() => {console.log("signedout")});
+    setUser(null) 
+    setUserProPic(null)
+    setUserName(null)
+  }
 
-  if(feed){
+  return (
+    <Router>
+      <div>
+        <img src={userProPic}/>
+        {/* <h1>{userName}</h1> */}
+        <nav>
+          <ul>
+            <li>
+              <Link to="/">Home</Link>
+            </li>
+            <li>
+              <Link to="/about">About</Link>
+            </li>
+            <li>
+              <Link to="/users">Users</Link>
+            </li>
+            <li>
+              <Link to="/uploadsong">Upload Orginal</Link>
+            </li>
+            <li>
+              <Link to="/uploadcover">Upload Cover</Link>
+            </li>
+          </ul>
+          <button onClick={login}> Login </button>
+          <button onClick={logout}> Logout </button>
+        </nav>
+
+        <Routes>
+          <Route path="/about" element={<About/>}></Route>
+          <Route path="/users" element={<Users/>}> </Route>
+          <Route path="/uploadsong" element={<UploadSong/>}></Route>
+          <Route path="/uploadcover" element={<UploadCover/>}></Route>
+          <Route path="/user/:username" element={<UserProfile/>}> </Route>
+          <Route path="/user/:username/:content" element={<UserContent/>}> </Route>
+          <Route path="/user/:username/:originals" element={<UserContent/>}> </Route>
+          <Route path="/user/:username/:originals/:song" element={<UserOriginal/>}> </Route>
+          <Route path="/user/:username/:covers" element={<UserContent/>}> </Route>
+          <Route path="/user/:username/:covers/:artist" element={<UserContent/>}> </Route>
+          <Route path="/user/:username/:covers/:artist/:song" element={<UserCover/>}> </Route>
+          <Route path="/user/:username/:likes" element={<UserContent/>}> </Route>
+          <Route path="/user/:username/:matches" element={<UserContent/>}> </Route>
+          <Route path="/user/:username/:matches/:match" element={<UserContent/>}> </Route>
+          <Route path="/" element={<Home/>}> </Route>
+        </Routes>
+      </div>
+    </Router>
+  );
+}
+
+class Home extends React.Component {
+  render() {
     return (
-      <div className="App">
-        <Navbar auth={auth} provider={provider} signIn={signIn} googleAuth={googleAuth} getRedirect={getRedirect} propic={propic} setPropic={setPropic} feed={feed} setFeed={setFeed} myProfile={myProfile} setMyProfile={setMyProfile}/>
-        <Feed featuredSong={featuredSong} setFeaturedSong={setFeaturedSong} db={db} feed={feed} setFeed={setFeed} myProfile={myProfile} setMyProfile={setMyProfile} profile={profile} setProfile={setProfile}/>
+      <div>
+        <h2>Home</h2>
+        <nav>
+            <ul>
+              <li>
+                <Link to="/">Home</Link>
+              </li>
+              <li>
+                <Link to="/about">About</Link>
+              </li>
+              <li>
+                <Link to="/users">Users</Link>
+              </li>
+            </ul>
+          </nav>
       </div>
+    ) 
+  }
+}
+
+function About() {
+  return <h2>About</h2>;
+}
+
+function Users() {
+  let users = ['Albert', 'Bob', 'Carl', 'Dave']
+  return (
+    <div>
+      <nav>
+            <ul>
+              <li>
+                <Link to={"/user/" + users[0]}>{users[0]}</Link>
+              </li>
+              <li>
+                <Link to={"/user/" + users[1]}>{users[1]}</Link>
+              </li>
+              <li>
+                <Link to={"/user/" + users[2]}>{users[2]}</Link>
+              </li>
+              <li>
+                <Link to={"/user/" + users[3]}>{users[3]}</Link>
+              </li>
+            </ul>
+          </nav>
+    </div>
+  )
+}
+
+function UserProfile() {
+  const { username } = useParams();
+  const [userPic, setUserPic] = React.useState(null);
+  const [userOriginals, setUserOriginals] = React.useState(null);
+  const [userCovers, setUserCovers] = React.useState(null);
+
+  let originalsComponentArray = [];
+  let coversComponentArray = [];
+  let uid;
+
+  React.useEffect(() => {
+    // console.log("This will only run once!")
+    
+    getDoc(doc(db, "users", username)).then((docSnap) => {
+      let profs = [];
+      // console.log(docSnap.data())
+      uid = docSnap.data().uid;
+      setUserPic(docSnap.data().propic)
+      // console.log(docSnap.data().propic)
+    }).then(() => {
+      const storage = getStorage();
+      const originalsRef = ref(storage, uid + '/originals');
+      listAll(originalsRef)
+      .then((res) => {
+        res.items.forEach((itemRef) => {
+          let songPath = itemRef._location.path_.split('/')
+          getDownloadURL(itemRef).then((url) => {
+            originalsComponentArray.push(<li key={url}><Link to={"/user/" + username + "/originals/" + songPath[songPath.length-1].slice(0,-4)}>{songPath[songPath.length-1].slice(0,-4)}</Link></li>);
+          }).then(() => {
+            if(originalsComponentArray.length == res.items.length) setUserOriginals(originalsComponentArray)
+          }).catch((error) => {
+            console.log(error)
+          })
+        });
+      }).catch((error) => {
+        // Uh-oh, an error occurred!
+      });
+
+      const coversRef = ref(storage, uid + '/covers');
+      let numberOfCovers = 0;
+      let originalArtist;
+      listAll(coversRef)
+      .then((res) => {
+        for(let i = 0; i < res.prefixes.length; i++){
+          let artistRef = ref(storage, res.prefixes[i]._location.path_);
+          listAll(artistRef)
+          .then((art) => {
+            for(let j = 0; j < art.items.length; j++){
+              numberOfCovers += 1;
+              let songPath = art.items[j]._location.path_.split('/');
+              getDownloadURL(art.items[j]).then((url) => {
+                originalArtist = res.prefixes[i]._location.path_.split('/')[2]; 
+                coversComponentArray.push(<li key={url}><Link to={"/user/" + username + "/covers/" + originalArtist + "/" + songPath[songPath.length-1].slice(0,-4)}>{originalArtist + " - " + songPath[songPath.length-1].slice(0,-4)}</Link></li>);
+              }).then(() => {
+                console.log(numberOfCovers)
+                if(coversComponentArray.length == numberOfCovers) {
+                  setUserCovers(coversComponentArray)
+                }
+              }).catch((error) => {
+                console.log(error)
+              })
+            }
+          })
+        }
+      }).catch((error) => {
+        // Uh-oh, an error occurred!
+      });
+    })
+  }, [])
+
+  return (
+    <div>
+      <h2>{username}</h2>
+      <img src={userPic}/>
+      <h3>Originals</h3>
+      <nav>
+        <ul>
+          {userOriginals}
+        </ul>
+      </nav>
+
+      <h3>Covers</h3>
+      <nav>
+        <ul>
+          {userCovers}
+        </ul>
+      </nav>
+    </div>
+  );
+}
+
+function UserContent() {
+  const song = useParams()['content'];
+  // let coverVersions = {artist1: song, artist: song, artist: song, 'Cover4'};
+  console.log(song)
+  return (
+    <div>
+      <h2>{song}</h2>
+    </div>
+  );
+}
+
+function UserOriginal() {
+  const song = useParams()['song'];
+  const user = useParams()['username']
+  const [songComponent, setSongComponent] = React.useState(null);
+  const [coversComponent, setCoversComponent] = React.useState(null);
+  let coveredBy = ["Allen", "Brian", "Cindy", "Daniel"];
+  let uid;
+  console.log(song)
+
+  React.useEffect(() => {
+    console.log("This will only run once!")
+    
+    // getData();
+    getDoc(doc(db, "users", user)).then((docSnap) => {
+      // let profs = [];
+      // console.log(docSnap.data())
+      uid = docSnap.data().uid;
+      // setUserPic(docSnap.data().propic)
+      // console.log(docSnap.data().propic)
+    }).then(() => {
+      const storage = getStorage();
+      const itemRef = ref(storage, uid + '/originals/'+ song + ".mp3");
+      getDownloadURL(itemRef).then((url) => {
+        console.log(url)
+        setSongComponent(<SongPlayer songSource={url} songName = {song} />)
+      }).catch((error) => {
+        console.log(error)
+      })
+    })
+
+    getDoc(doc(db, "users/" + user + "/Originals/" + song)).then((docSnap) => {
+      // console.log(docSnap.data())
+      let coverVersions = docSnap.data();
+      let coversArray = [];
+      console.log(coverVersions)
+      for (const coverArtist in coverVersions) {
+        console.log(coverArtist, coverVersions[coverArtist]);
+        console.log("user/" + coverArtist + "/Covers/" + user + "/" + song)
+        coversArray.push(
+          <li>
+            <Link to={"/user/" + coverArtist + "/Covers/" + user + "/" + song}>{coverArtist}</Link>
+          </li>
+        )
+      }
+      setCoversComponent(coversArray)
+    })
+    // .then(() => {
+    //   const storage = getStorage();
+    //   const itemRef = ref(storage, uid + '/originals/'+ song + ".mp3");
+    //   getDownloadURL(itemRef).then((url) => {
+    //     console.log(url)
+    //     setSongComponent(<SongPlayer songSource={url} songName = {song} />)
+    //   }).catch((error) => {
+    //     console.log(error)
+    //   })
+    // })
+
+  }, [])
+
+  return (
+    <div>
+      <h2>{song}</h2>
+      <div>{songComponent}</div>
+      <h3>Cover Versions by</h3>
+      <nav>
+        {coversComponent}
+        {/* <ul>
+          <li>
+            <Link to={"/user/" + coveredBy[0] + "/covers/" + user + "/" + song}>song1</Link>
+          </li>
+          <li>
+            <Link to={"/user/" + coveredBy[1] + "/covers/" + user + "/" + song}>song2</Link>
+          </li>
+          <li>
+            <Link to={"/user/" + coveredBy[2] + "/covers/" + user + "/" + song}>song3</Link>
+          </li>
+          <li>
+            <Link to={"/user/" + coveredBy[3] + "/covers/" + user + "/" + song}>song4</Link>
+          </li>
+        </ul> */}
+      </nav>
+      <UploadCover/>
+    </div>
+  );
+}
+
+function UserCover() {
+  const song = useParams()['song'];
+  const user = useParams()['username'];  // Cover artist
+  const artist = useParams()['artist'];  // Original artist
+  const [songComponent, setSongComponent] = React.useState(null);
+  let uid;
+  let coveredBy = ["Allen", "Brian", "Cindy", "Daniel"];
+  console.log(song)
+
+  React.useEffect(() => {
+    console.log("This will only run once!")
+    
+    // getData();
+    getDoc(doc(db, "users", user)).then((docSnap) => {
+      // let profs = [];
+      // console.log(docSnap.data())
+      uid = docSnap.data().uid;
+      // setUserPic(docSnap.data().propic)
+      // console.log(docSnap.data().propic)
+    }).then(() => {
+      const storage = getStorage();
+      const itemRef = ref(storage, uid + '/covers/'+ artist + "/" + song + ".mp3");
+      getDownloadURL(itemRef).then((url) => {
+        console.log(url)
+        setSongComponent(<SongPlayer songSource={url} songName = {song} />)
+      }).catch((error) => {
+        console.log(error)
+      })
+    })
+  }, [])
+
+  return (
+    <div>
+      <h2>{song}</h2>
+      <div>{songComponent}</div>
+      <h4>Cover by <Link to={"/user/" + user}>{user}</Link></h4>
+      <h3>Originally by <Link to={"/user/" + artist}>{artist}</Link></h3>
+    </div>
+  );
+}
+
+function SongPlayer(props) {
+    return (
+        <div>
+            {/* <p >{props.songName ? props.songName.slice(0,-4) : "unnamed"}</p> */}
+            <audio controls className="Player">
+                <source src={props.songSource} type="audio/mpeg" />
+            </audio>
+        </div>
+    )  
+}
+
+function UploadSong() {
+  const [percent, setPercent] = React.useState(null);
+  const [originalUpload, setOriginalUpload] = React.useState(null);
+  const [songName, setSongName] = React.useState(null);
+  const [message, setMessage] = React.useState(null);
+  const [uploadButton, setUploadButton] = React.useState(<input type="file" id="myFile" allow="audio/mp3" name="filename" onChange={(e) => handleFile(e)} disabled></input>);
+
+  let numberOfOriginals = 0;
+  let numberOfCovers = 0;
+
+  React.useEffect(() => {
+
+    const storage = getStorage();
+    const originalsRef = ref(storage, auth.currentUser.uid + '/originals/');
+    const coversRef = ref(storage, auth.currentUser.uid + '/covers/');
+    listAll(originalsRef)
+    .then((res) => {
+      console.log(res.items.length);
+      numberOfOriginals = res.items.length;
+    }).then(() => {
+      listAll(coversRef)
+      .then((res) => {
+        numberOfCovers = res.items.length;
+        console.log(numberOfOriginals, numberOfCovers);
+        if(numberOfOriginals - numberOfCovers > 1){
+          setMessage("You'll be able to upload another original after you submit your next cover");
+          return;
+        } else {
+          setUploadButton(<input type="file" id="myFile" allow="audio/mp3" name="filename" onChange={(e) => handleFile(e)} ></input>);
+        }
+      })
+    }).catch((error) => {
+      // Uh-oh, an error occurred!
+    });
+  }, [])
+
+  function handleFile(e){
+    let file = e.target.files[0];
+
+    const storage = getStorage();
+    const originalsRef = ref(storage, auth.currentUser.uid + '/originals/');
+    const coversRef = ref(storage, auth.currentUser.uid + '/covers/');
+    listAll(originalsRef)
+    .then((res) => {
+      console.log(res.items.length);
+      numberOfOriginals = res.items.length;
+    }).then(() => {
+      listAll(coversRef)
+      .then((res) => {
+        numberOfCovers = res.items.length;
+        console.log(numberOfOriginals, numberOfCovers);
+        if(numberOfOriginals - numberOfCovers > 1){
+          setMessage("You'll be able to upload another original after you submit your next cover");
+          file = null;
+          return;
+        }
+      })
+    }).catch((error) => {
+      // Uh-oh, an error occurred!
+    });
+
+    if(file.type != 'audio/mpeg'){
+      setMessage("File type must be an mp3.");
+      file = null;
+      return;
+    }
+
+    const metadata = {
+      contentType: 'audio/mpeg'
+    };
+
+    const storageRef = ref(storage, auth.currentUser.uid + '/originals/' + file.name);
+
+    // const userRef = collection(db, "users");
+    // console.log(userRef)
+    // updateDoc(doc(userRef, auth.currentUser.displayName), {
+    //   originals: file.name
+    // });
+
+    const uploadTask = uploadBytesResumable(storageRef, file, metadata);
+
+    uploadTask.on('state_changed',
+      (snapshot) => {
+        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        setPercent(progress)
+        // console.log('Upload is ' + progress + '% done');
+        switch (snapshot.state) {
+          case 'paused':
+            console.log('Upload is paused');
+            break;
+          case 'running':
+            console.log('Upload is running');
+            break;
+        }
+      }, 
+      (error) => {
+        // A full list of error codes is available at
+        // https://firebase.google.com/docs/storage/web/handle-errors
+        switch (error.code) {
+          case 'storage/unauthorized':
+            console.log("unauthorized")
+            // User doesn't have permission to access the object
+            break;
+          case 'storage/canceled':
+            console.log("cancaled")
+            // User canceled the upload
+            break;
+
+          // ...
+
+          case 'storage/unknown':
+            console.log("unknown")
+            // Unknown error occurred, inspect error.serverResponse
+            break;
+        }
+      }, 
+      () => {
+        // Upload completed successfully, now we can get the download URL
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          console.log('File available at', downloadURL);
+          setOriginalUpload(downloadURL)
+        });
+      }
     );
-  } else if(myProfile){
-    return(
-      <div className="App">
-        <Navbar auth={auth} provider={provider} signIn={signIn} googleAuth={googleAuth} getRedirect={getRedirect} propic={propic} setPropic={setPropic} feed={feed} setFeed={setFeed} myProfile={myProfile} setMyProfile={setMyProfile}/>
-        <Profile auth={auth} propic={propic} songs={songs} setSongs={setSongs} songList={songList}/>
-      </div>
-    )
   }
-  else{
-    return(
-      <div className="App">
-        <Navbar auth={auth} provider={provider} signIn={signIn} googleAuth={googleAuth} getRedirect={getRedirect} propic={propic} setPropic={setPropic} feed={feed} setFeed={setFeed} myProfile={myProfile} setMyProfile={setMyProfile}/>
-        <p>{profile}</p>
+
+  return (
+    <div>
+      <div className="upload">
+        <p>Upload an original:</p>
+        <p>{message}</p>
+        {/* <label for="songname">Song Title: </label>
+        <input type="text"></input> */}
+        <br></br>
+        {uploadButton}
+        <LoadingBar percent = {percent} />
       </div>
-    )
+    </div>
+  )
+}
+
+function UploadCover() {
+  const artist = useParams()['username'];  // The original artist
+  const song = useParams()['song'];
+  console.log("This ARTIST is " + artist);
+  const [percent, setPercent] = React.useState(null);
+  const [coverUpload, setCoverUpload] = React.useState(null);
+  const [songName, setSongName] = React.useState(null);
+  const [message, setMessage] = React.useState(null);
+  const [uploadButton, setUploadButton] = React.useState(<input type="file" id="myFile" allow="audio/mp3" name="filename" onChange={(e) => handleFile(e)} disabled></input>);
+
+  let numberOfOriginals = 0;
+  let numberOfCovers = 0;
+
+  React.useEffect(() => {
+    const storage = getStorage();
+    const originalsRef = ref(storage, auth.currentUser.uid + '/originals/');
+    const coversRef = ref(storage, auth.currentUser.uid + '/covers/');
+    listAll(originalsRef)
+    .then((res) => {
+      console.log(res.items.length);
+      numberOfOriginals = res.items.length;
+    }).then(() => {
+      listAll(coversRef)
+      .then((res) => {
+        numberOfCovers = res.items.length;
+        setUploadButton(<input type="file" id="myFile" allow="audio/mp3" name="filename" onChange={(e) => handleFile(e)} ></input>);
+      })
+    }).catch((error) => {
+      // Uh-oh, an error occurred!
+    });
+  }, [])
+
+  function handleFile(e){
+    let file = e.target.files[0];
+
+    const storage = getStorage();
+    const originalsRef = ref(storage, auth.currentUser.uid + '/originals/');
+    const coversRef = ref(storage, auth.currentUser.uid + '/covers/');
+    listAll(originalsRef)
+    .then((res) => {
+      console.log(res.items.length);
+      numberOfOriginals = res.items.length;
+    }).then(() => {
+      listAll(coversRef)
+      .then((res) => {
+        numberOfCovers = res.items.length;
+        console.log(numberOfOriginals, numberOfCovers);
+      })
+    }).catch((error) => {
+      // Uh-oh, an error occurred!
+    });
+
+    if(file.type != 'audio/mpeg'){
+      setMessage("File type must be an mp3.");
+      file = null;
+      return;
+    }
+
+    const metadata = {
+      contentType: 'audio/mpeg'
+    };
+
+    const storageRef = ref(storage, auth.currentUser.uid + '/covers/' + artist + "/" + file.name);
+
+    const userRef = collection(db, "users/" + artist + "/Originals");
+    updateDoc(doc(userRef, song), {
+      [auth.currentUser.displayName]: auth.currentUser.uid + '/covers/' + artist + "/" + file.name
+    });
+
+    const uploadTask = uploadBytesResumable(storageRef, file, metadata);
+
+    uploadTask.on('state_changed',
+      (snapshot) => {
+        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        setPercent(progress)
+        // console.log('Upload is ' + progress + '% done');
+        switch (snapshot.state) {
+          case 'paused':
+            console.log('Upload is paused');
+            break;
+          case 'running':
+            console.log('Upload is running');
+            break;
+        }
+      }, 
+      (error) => {
+        // A full list of error codes is available at
+        // https://firebase.google.com/docs/storage/web/handle-errors
+        switch (error.code) {
+          case 'storage/unauthorized':
+            console.log("unauthorized")
+            // User doesn't have permission to access the object
+            break;
+          case 'storage/canceled':
+            console.log("cancaled")
+            // User canceled the upload
+            break;
+
+          // ...
+
+          case 'storage/unknown':
+            console.log("unknown")
+            // Unknown error occurred, inspect error.serverResponse
+            break;
+        }
+      }, 
+      () => {
+        // Upload completed successfully, now we can get the download URL
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          console.log('File available at', downloadURL);
+          setCoverUpload(downloadURL)
+        });
+      }
+    );
   }
-  
+
+  return (
+    <div>
+      <div className="upload">
+        <p>Submit a cover:</p>
+        <p>{message}</p>
+        {/* <label for="songname">Song Title: </label>
+        <input type="text"></input> */}
+        <br></br>
+        {uploadButton}
+        <LoadingBar percent = {percent} />
+      </div>
+    </div>
+  )
+}
+
+
+function LoadingBar(props) {
+  if(props.percent > 0 && props.percent < 100){
+      return(
+          <div>
+              <p>Uploading... {Math.round(props.percent)} %</p>
+          </div>
+      );
+  } else if (props.percent ==  100) {
+      return(
+          <div>
+              <p>Upload Complete!</p>
+          </div>
+      )
+  } else {
+      return(
+          <div></div>
+      )
+  }
 }
 
 export default App;
