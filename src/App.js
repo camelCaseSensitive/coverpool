@@ -102,6 +102,7 @@ function App() {
         if(res._node.value_){
           console.log(res._node.value_)
           setUserName(res._node.value_)
+          globalUserName = res._node.value_;
         } else {
           setHasUsername(false)
           console.log("Need to create a username")
@@ -115,6 +116,7 @@ function App() {
           uid: auth.currentUser.uid,
           name: auth.currentUser.displayName,
           propic: auth.currentUser.providerData[0].photoURL,
+          username: globalUserName
         });
       }
     }
@@ -184,11 +186,13 @@ function App() {
           dbSet(dbRef(rtdb, "/users/" + auth.currentUser.uid), newUsername)
           setUserName(newUsername)
           setHasUsername(true)
+          globalUserName = newUsername;
           const userRef = collection(db, "users");
           setDoc(doc(userRef, newUsername), {
             uid: auth.currentUser.uid,
             name: auth.currentUser.displayName,
             propic: auth.currentUser.providerData[0].photoURL,
+            username: globalUserName
           });
         }} disabled={!usernameAvailable}> Create Account</button>
       </div>
@@ -197,28 +201,28 @@ function App() {
     return (
       <Router>
         <div>
-          <img src={userProPic}/>
           {/* <h1>{userName}</h1> */}
-          <nav>
-            <ul>
-              <li>
+          <nav className="nav-bar">
+            <div className='header'>
+              <Link to={"/user/" + userName}><img className="profile" src={userProPic}/></Link>
+              <h1>CVRPL</h1>
+            </div>
+            <ul className="nav-bar-links">
+              <li className="nav-bar-link">
                 <Link to="/">Home</Link>
               </li>
-              <li>
+              <li className="nav-bar-link">
                 <Link to="/about">About</Link>
               </li>
-              <li>
+              <li className="nav-bar-link">
                 <Link to="/users">Users</Link>
               </li>
-              <li>
-                <Link to="/uploadsong">Upload Orginal</Link>
-              </li>
-              <li>
-                <Link to="/uploadcover">Upload Cover</Link>
+              <li className="nav-bar-link">
+                <Link to="/uploadsong">+ Upload Orginal</Link>
               </li>
             </ul>
-            <button onClick={login}> Login </button>
-            <button onClick={logout}> Logout </button>
+            <button className="login" onClick={login}> Login </button>
+            <button className="logout" onClick={logout}> Logout </button>
           </nav>
 
           <Routes>
@@ -249,14 +253,10 @@ class Home extends React.Component {
     return (
       <div>
         <h2>Home</h2>
+        <p>Welcome to coverpool.</p>
+        <p>This will be a feed of recent user activity and a featured cover in the futute.  In the meantime browse the users to discover new artists and songs to cover!</p>
         <nav>
             <ul>
-              <li>
-                <Link to="/">Home</Link>
-              </li>
-              <li>
-                <Link to="/about">About</Link>
-              </li>
               <li>
                 <Link to="/users">Users</Link>
               </li>
@@ -268,27 +268,47 @@ class Home extends React.Component {
 }
 
 function About() {
-  return <h2>About</h2>;
+  return (
+    <div>
+      <h2>About</h2>
+      <p>This is a place for songwriters to explore each other's music by covering songs by other artists on the site.</p>
+      <h3>How it works</h3>
+      <ol>
+        <li>Login with Google</li>
+        <li>Create a username</li>
+        <li>Upload an original</li>
+        <li>Cover other artists</li>
+        <li>Each cover you submit lets you upload one more original</li>
+      </ol>
+    </div>
+  )
 }
 
 function Users() {
+  const [usersArray, setUsersArray] = React.useState([])
+
+  React.useEffect(() => {
+    let dbUsernames = [];
+    dbGet(dbRef(rtdb, "/users/")).then((res) => {
+      res.forEach((u) => {
+        console.log(u._node.value_)
+        // if(u._node.value_ != "default") dbUsernames.push(u._node.value_)
+        if(u._node.value_ != "default") dbUsernames.push(<li><Link to={"/user/" + u._node.value_}>{u._node.value_}</Link></li>)
+      })
+      // 
+      console.log(usersArray)
+      setUsersArray(dbUsernames)
+    })
+    
+  }, [])
+  
+  
   let users = ['Albert', 'Bob', 'Carl', 'Dave']
   return (
     <div>
       <nav>
             <ul>
-              <li>
-                <Link to={"/user/" + users[0]}>{users[0]}</Link>
-              </li>
-              <li>
-                <Link to={"/user/" + users[1]}>{users[1]}</Link>
-              </li>
-              <li>
-                <Link to={"/user/" + users[2]}>{users[2]}</Link>
-              </li>
-              <li>
-                <Link to={"/user/" + users[3]}>{users[3]}</Link>
-              </li>
+              {usersArray}
             </ul>
           </nav>
     </div>
@@ -334,27 +354,36 @@ function UserProfile() {
       });
 
       const coversRef = ref(storage, uid + '/covers');
+      console.log(coversRef)
       let numberOfCovers = 0;
       let originalArtist;
+      let originalSongName;
       listAll(coversRef)
       .then((res) => {
         for(let i = 0; i < res.prefixes.length; i++){
           let artistRef = ref(storage, res.prefixes[i]._location.path_);
           listAll(artistRef)
           .then((art) => {
-            for(let j = 0; j < art.items.length; j++){
-              numberOfCovers += 1;
-              let songPath = art.items[j]._location.path_.split('/');
-              getDownloadURL(art.items[j]).then((url) => {
-                originalArtist = res.prefixes[i]._location.path_.split('/')[2]; 
-                coversComponentArray.push(<li key={url}><Link to={"/user/" + username + "/covers/" + originalArtist + "/" + songPath[songPath.length-1].slice(0,-4)}>{originalArtist + " - " + songPath[songPath.length-1].slice(0,-4)}</Link></li>);
-              }).then(() => {
-                console.log(numberOfCovers)
-                if(coversComponentArray.length == numberOfCovers) {
-                  setUserCovers(coversComponentArray)
+            for(let k = 0; k < art.prefixes.length; k++){
+              let songRef = ref(storage, art.prefixes[k]._location.path_)
+              listAll(songRef).then((song) => {
+                for(let j = 0; j < song.items.length; j++){
+                  numberOfCovers += 1;
+                  console.log(song.items[0]._location.path_)
+                  let songPath = song.items[j]._location.path_.split('/');
+                  getDownloadURL(song.items[j]).then((url) => {
+                    originalArtist = song.items[0]._location.path_.split('/')[2]; 
+                    originalSongName = song.items[0]._location.path_.split('/')[3]
+                    coversComponentArray.push(<li key={url}><Link to={"/user/" + username + "/covers/" + originalArtist + "/" + originalSongName}>{originalArtist + " - " + originalSongName}</Link></li>);
+                  }).then(() => {
+                    console.log(numberOfCovers)
+                    if(coversComponentArray.length == numberOfCovers) {
+                      setUserCovers(coversComponentArray)
+                    }
+                  }).catch((error) => {
+                    console.log(error)
+                  })
                 }
-              }).catch((error) => {
-                console.log(error)
               })
             }
           })
@@ -428,18 +457,20 @@ function UserOriginal() {
     })
 
     getDoc(doc(db, "users/" + user + "/Originals/" + song)).then((docSnap) => {
-      // console.log(docSnap.data())
+      console.log(docSnap.data())
       let coverVersions = docSnap.data();
       let coversArray = [];
       console.log(coverVersions)
       for (const coverArtist in coverVersions) {
         console.log(coverArtist, coverVersions[coverArtist]);
         console.log("user/" + coverArtist + "/Covers/" + user + "/" + song)
-        coversArray.push(
-          <li>
-            <Link to={"/user/" + coverArtist + "/Covers/" + user + "/" + song}>{coverArtist}</Link>
-          </li>
-        )
+        if(coverArtist != 'default'){
+          coversArray.push(
+            <li>
+              <Link to={"/user/" + coverArtist + "/Covers/" + user + "/" + song}>{coverArtist}</Link>
+            </li>
+          )
+        }
       }
       setCoversComponent(coversArray)
     })
@@ -504,13 +535,22 @@ function UserCover() {
       // console.log(docSnap.data().propic)
     }).then(() => {
       const storage = getStorage();
-      const itemRef = ref(storage, uid + '/covers/'+ artist + "/" + song + ".mp3");
-      getDownloadURL(itemRef).then((url) => {
-        console.log(url)
-        setSongComponent(<SongPlayer songSource={url} songName = {song} />)
-      }).catch((error) => {
-        console.log(error)
-      })
+
+      const userRef = collection(db, "users/" + artist + "/Originals/");
+      getDoc(doc(userRef, song)).then((songFile) => {
+        console.log(songFile._document.data.value.mapValue.fields[user].stringValue.split('/')[3])
+        const itemRef = ref(storage, uid + '/covers/'+ artist + "/" + songFile._document.data.value.mapValue.fields[user].stringValue.split('/')[3]);
+        listAll(itemRef).then((song) => {
+          console.log(song.items[0]._location.path_)
+          // console.log(itemRef)
+          getDownloadURL(ref(storage, song.items[0]._location.path_)).then((url) => {
+            console.log(url)
+            setSongComponent(<SongPlayer songSource={url} songName = {song} />)
+          }).catch((error) => {
+            console.log(error)
+          })
+        })
+      });
     })
   }, [])
 
@@ -558,8 +598,7 @@ function UploadSong() {
       listAll(coversRef)
       .then((res) => {
         numberOfCovers = res.items.length;
-        console.log(numberOfOriginals, numberOfCovers);
-        if(numberOfOriginals - numberOfCovers > 1){
+        if(numberOfOriginals - numberOfCovers > 0){
           setMessage("You'll be able to upload another original after you submit your next cover");
           return;
         } else {
@@ -608,11 +647,11 @@ function UploadSong() {
 
     const storageRef = ref(storage, auth.currentUser.uid + '/originals/' + file.name);
 
-    // const userRef = collection(db, "users");
-    // console.log(userRef)
-    // updateDoc(doc(userRef, auth.currentUser.displayName), {
-    //   originals: file.name
-    // });
+    const userRef = collection(db, "users/" + globalUserName + "/Originals/");
+    console.log(userRef)
+    setDoc(doc(userRef, file.name.split('.')[0]), {
+      default: "path"
+    });
 
     const uploadTask = uploadBytesResumable(storageRef, file, metadata);
 
@@ -657,6 +696,7 @@ function UploadSong() {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           console.log('File available at', downloadURL);
           setOriginalUpload(downloadURL)
+          setUploadButton(<input type="file" id="myFile" allow="audio/mp3" name="filename" onChange={(e) => handleFile(e)} disabled></input>)
         });
       }
     );
@@ -715,6 +755,9 @@ function UploadCover() {
     const storage = getStorage();
     const originalsRef = ref(storage, auth.currentUser.uid + '/originals/');
     const coversRef = ref(storage, auth.currentUser.uid + '/covers/');
+
+    // Count the number of originals and covers that a user has
+    // Used to limit the number of original uploads a user can have
     listAll(originalsRef)
     .then((res) => {
       console.log(res.items.length);
@@ -739,11 +782,15 @@ function UploadCover() {
       contentType: 'audio/mpeg'
     };
 
-    const storageRef = ref(storage, auth.currentUser.uid + '/covers/' + artist + "/" + file.name);
+    // const storageRef = ref(storage, auth.currentUser.uid + '/covers/' + artist + "/" +  file.name);
+    const storageRef = ref(storage, auth.currentUser.uid + '/covers/' + artist + "/" + song + "/" + file.name);
 
+
+    // Write the pointer to the location in Storage in the Firestore Database
     const userRef = collection(db, "users/" + artist + "/Originals");
     updateDoc(doc(userRef, song), {
-      [auth.currentUser.displayName]: auth.currentUser.uid + '/covers/' + artist + "/" + file.name
+      // [auth.currentUser.displayName]: auth.currentUser.uid + '/covers/' + artist + "/" + file.name
+      [globalUserName]: auth.currentUser.uid + '/covers/' + artist + "/" + song + "/" +file.name
     });
 
     const uploadTask = uploadBytesResumable(storageRef, file, metadata);

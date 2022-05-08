@@ -36,3 +36,47 @@
     transform: rotate(360deg);
   }
 }
+
+.nav-bar {
+  display: flex;
+  width: 100%;
+  /* height: 2em; */
+  margin: 0;
+  padding: 0;
+  /* border: 2px solid red; */
+}
+
+.nav-bar-links {
+  display: flex;
+  width: 100%;
+  height: 50%;
+  margin: 0;
+  /* border: 2px solid green; */
+  list-style: none
+}
+
+.nav-bar-link {
+  padding: 1em;
+  height: 50%;
+  /* border: 2px solid blue; */
+}
+
+.header {
+  display: flex;
+  width: 25%;
+  margin: 0;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.profile {
+  border-radius: 50%
+}
+
+.login {
+ height: 50%;
+}
+
+.logout {
+  height: 50%;
+}
