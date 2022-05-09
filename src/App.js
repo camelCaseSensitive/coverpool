@@ -654,7 +654,7 @@ function UploadSong() {
   const [percent, setPercent] = React.useState(null);
   const [originalUpload, setOriginalUpload] = React.useState(null);
   const [songName, setSongName] = React.useState(null);
-  const [message, setMessage] = React.useState(null);
+  const [message, setMessage] = React.useState("You'll be able to upload another original after you submit your next cover");
   const [uploadButton, setUploadButton] = React.useState(<input type="file" id="myFile" allow="audio/mp3" name="filename" onChange={(e) => handleFile(e)} disabled></input>);
 
   let numberOfOriginals = 0;
@@ -817,7 +817,7 @@ function UploadSong() {
         </div> */}
         {/* <label for="songname">Song Title: </label>
         <input type="text"></input> */}
-        <br></br>
+        {/* <br></br> */}
         <p>Song Title: The name of the file will be the name of the song!</p>
         <p>File must be an mp3 less than 10mb</p>
         {uploadButton}
