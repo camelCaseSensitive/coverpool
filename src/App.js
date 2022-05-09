@@ -166,20 +166,35 @@ function App() {
     return(
       <div>
         <p>Create a username for your account</p>
+        <p>- 3-20 characters</p>
+        <p>- no spaces or special characters</p>
         <input id="newusername" onKeyUp={() => {
           console.log("keyup")
           newUsername = document.getElementById("newusername").value;
-          dbGet(dbRef(rtdb, "/users/")).then((res) => {
-            setUsernameAvailable(true)
-            setAvailabilityMessage("")
-            res.forEach((username) => {
-              if(username._node.value_ == newUsername){
-                setUsernameAvailable(false)
-                setAvailabilityMessage("Sorry that username is already taken")
-                console.log("MATCH")
-              }
+
+          var usernameFormat = /^(\d{3,20}|\w{3,20}){1}$/;;
+          if(!usernameFormat.test(newUsername)){
+            if(newUsername.length < 3) { 
+              setAvailabilityMessage("Username is too short")
+            } else if(newUsername.length > 20) {
+               setAvailabilityMessage("Username is too long")
+            } else {
+              setAvailabilityMessage("Username cannont contain any spaces or special characters")
+            }
+            setUsernameAvailable(false)
+          } else {
+            dbGet(dbRef(rtdb, "/users/")).then((res) => {
+              setUsernameAvailable(true)
+              setAvailabilityMessage("")
+              res.forEach((username) => {
+                if(username._node.value_ == newUsername){
+                  setUsernameAvailable(false)
+                  setAvailabilityMessage("Sorry that username is already taken")
+                  console.log("MATCH")
+                }
+              })
             })
-          })
+          }
       }}></input>
       <p>{availabilityMessage}</p>
         <button onClick={() => {
@@ -253,8 +268,9 @@ class Home extends React.Component {
     return (
       <div>
         <h2>Home</h2>
-        <p>Welcome to coverpool.</p>
-        <p>This will be a feed of recent user activity and a featured cover in the futute.  In the meantime browse the users to discover new artists and songs to cover!</p>
+        <p>Welcome to Coverpool.</p>
+        <p>This will be a feed of recent user activity and a featured cover in the futute.</p> 
+        <p>In the meantime browse the site's users to discover new artists and songs.</p>
         <nav>
             <ul>
               <li>
@@ -271,15 +287,16 @@ function About() {
   return (
     <div>
       <h2>About</h2>
-      <p>This is a place for songwriters to explore each other's music by covering songs by other artists on the site.</p>
+      <p>Coverpool is a place for songwriters to discover and share music by covering each other's songs.</p>
       <h3>How it works</h3>
       <ol>
         <li>Login with Google</li>
-        <li>Create a username</li>
+        <li>You will then be prompted to create a username</li>
         <li>Upload an original</li>
         <li>Cover other artists</li>
         <li>Each cover you submit lets you upload one more original</li>
       </ol>
+      <p>If you need help with something email <a href = "mailto: anryguiltar@gmail.com">anry guiltar</a></p>
     </div>
   )
 }
@@ -342,7 +359,21 @@ function UserProfile() {
         res.items.forEach((itemRef) => {
           let songPath = itemRef._location.path_.split('/')
           getDownloadURL(itemRef).then((url) => {
-            originalsComponentArray.push(<li key={url}><Link to={"/user/" + username + "/originals/" + songPath[songPath.length-1].slice(0,-4)}>{songPath[songPath.length-1].slice(0,-4)}</Link></li>);
+            let songFileName = songPath[songPath.length-1].slice(0,-4);
+
+            // If filename has spaces in it add dashes
+            if(songFileName.split(' ').length > 1){
+              let songWords = songFileName.split(' ');
+              songFileName = "";
+              for(let i = 0; i < songWords.length; i++){
+                if(i != songWords.length - 1) {
+                  songFileName = songFileName.concat(songWords[i],'-');
+                } else {
+                  songFileName = songFileName.concat(songWords[i])
+                }
+              }
+            }
+            originalsComponentArray.push(<li key={url}><Link to={"/user/" + username + "/originals/" + songFileName}>{songPath[songPath.length-1].slice(0,-4)}</Link></li>);
           }).then(() => {
             if(originalsComponentArray.length == res.items.length) setUserOriginals(originalsComponentArray)
           }).catch((error) => {
@@ -373,8 +404,21 @@ function UserProfile() {
                   let songPath = song.items[j]._location.path_.split('/');
                   getDownloadURL(song.items[j]).then((url) => {
                     originalArtist = song.items[0]._location.path_.split('/')[2]; 
-                    originalSongName = song.items[0]._location.path_.split('/')[3]
-                    coversComponentArray.push(<li key={url}><Link to={"/user/" + username + "/covers/" + originalArtist + "/" + originalSongName}>{originalArtist + " - " + originalSongName}</Link></li>);
+                    originalSongName = song.items[0]._location.path_.split('/')[3];
+
+                    // Replace spaces with dashes in song name
+                    if(originalSongName.split(' ').length > 1){
+                      let songWords = originalSongName.split(' ');
+                      originalSongName = "";
+                      for(let i = 0; i < songWords.length; i++){
+                        if(i != songWords.length - 1) {
+                          originalSongName = originalSongName.concat(songWords[i],'-');
+                        } else {
+                          originalSongName = originalSongName.concat(songWords[i])
+                        }
+                      }
+                    }
+                    coversComponentArray.push(<li key={url}><Link to={"/user/" + username + "/covers/" + originalArtist + "/" + originalSongName}>{originalArtist + " - " + song.items[0]._location.path_.split('/')[3]}</Link></li>);
                   }).then(() => {
                     console.log(numberOfCovers)
                     if(coversComponentArray.length == numberOfCovers) {
@@ -435,6 +479,22 @@ function UserOriginal() {
   let uid;
   console.log(song)
 
+  // Convert dashes to spaces in song name
+  let undashedSong = "";
+  if(song.split('-').length > 1){
+    let songWords = song.split('-');
+    for(let i = 0; i < songWords.length; i++){
+      if(i != songWords.length - 1) {
+        undashedSong = undashedSong.concat(songWords[i],' ');
+      } else {
+        undashedSong = undashedSong.concat(songWords[i])
+      }
+    }
+  } else {
+    undashedSong = song;
+  }
+
+
   React.useEffect(() => {
     console.log("This will only run once!")
     
@@ -447,16 +507,16 @@ function UserOriginal() {
       // console.log(docSnap.data().propic)
     }).then(() => {
       const storage = getStorage();
-      const itemRef = ref(storage, uid + '/originals/'+ song + ".mp3");
+      const itemRef = ref(storage, uid + '/originals/'+ undashedSong + ".mp3");
       getDownloadURL(itemRef).then((url) => {
         console.log(url)
-        setSongComponent(<SongPlayer songSource={url} songName = {song} />)
+        setSongComponent(<SongPlayer songSource={url} songName = {undashedSong} />)
       }).catch((error) => {
         console.log(error)
       })
     })
 
-    getDoc(doc(db, "users/" + user + "/Originals/" + song)).then((docSnap) => {
+    getDoc(doc(db, "users/" + user + "/Originals/" + undashedSong)).then((docSnap) => {
       console.log(docSnap.data())
       let coverVersions = docSnap.data();
       let coversArray = [];
@@ -489,7 +549,7 @@ function UserOriginal() {
 
   return (
     <div>
-      <h2>{song}</h2>
+      <h2>{undashedSong}</h2>
       <div>{songComponent}</div>
       <h3>Cover Versions by</h3>
       <nav>
@@ -523,6 +583,21 @@ function UserCover() {
   let coveredBy = ["Allen", "Brian", "Cindy", "Daniel"];
   console.log(song)
 
+  // Convert dashes to spaces in song name
+  let undashedSong = "";
+  if(song.split('-').length > 1){
+    let songWords = song.split('-');
+    for(let i = 0; i < songWords.length; i++){
+      if(i != songWords.length - 1) {
+        undashedSong = undashedSong.concat(songWords[i],' ');
+      } else {
+        undashedSong = undashedSong.concat(songWords[i])
+      }
+    }
+  } else {
+    undashedSong = song;
+  }
+
   React.useEffect(() => {
     console.log("This will only run once!")
     
@@ -537,7 +612,7 @@ function UserCover() {
       const storage = getStorage();
 
       const userRef = collection(db, "users/" + artist + "/Originals/");
-      getDoc(doc(userRef, song)).then((songFile) => {
+      getDoc(doc(userRef, undashedSong)).then((songFile) => {
         console.log(songFile._document.data.value.mapValue.fields[user].stringValue.split('/')[3])
         const itemRef = ref(storage, uid + '/covers/'+ artist + "/" + songFile._document.data.value.mapValue.fields[user].stringValue.split('/')[3]);
         listAll(itemRef).then((song) => {
@@ -596,14 +671,21 @@ function UploadSong() {
       numberOfOriginals = res.items.length;
     }).then(() => {
       listAll(coversRef)
-      .then((res) => {
-        numberOfCovers = res.items.length;
-        if(numberOfOriginals - numberOfCovers > 0){
-          setMessage("You'll be able to upload another original after you submit your next cover");
-          return;
-        } else {
-          setUploadButton(<input type="file" id="myFile" allow="audio/mp3" name="filename" onChange={(e) => handleFile(e)} ></input>);
-        }
+      .then((coverArtists) => {
+        coverArtists.prefixes.forEach((coversOfArtist) => {
+          listAll(coversOfArtist).then((res) => {
+            console.log(res)
+            numberOfCovers += res.prefixes.length
+            console.log("You've made " + numberOfCovers + " covers")
+            if(numberOfOriginals - numberOfCovers > 0){
+              console.log("You've uploaded " + numberOfOriginals + " originals and " + numberOfCovers + "covers")
+              setMessage("You'll be able to upload another original after you submit your next cover");
+              return;
+            } else {
+              setUploadButton(<input type="file" id="myFile" allow="audio/mp3" name="filename" onChange={(e) => handleFile(e)} ></input>);
+            }
+          })
+        })
       })
     }).catch((error) => {
       // Uh-oh, an error occurred!
@@ -621,22 +703,44 @@ function UploadSong() {
       console.log(res.items.length);
       numberOfOriginals = res.items.length;
     }).then(() => {
-      listAll(coversRef)
-      .then((res) => {
-        numberOfCovers = res.items.length;
-        console.log(numberOfOriginals, numberOfCovers);
-        if(numberOfOriginals - numberOfCovers > 1){
-          setMessage("You'll be able to upload another original after you submit your next cover");
-          file = null;
-          return;
-        }
-      })
+      if(numberOfCovers == 0){
+        listAll(coversRef)
+        .then((coverArtists) => {
+          coverArtists.prefixes.forEach((coversOfArtist) => {
+            listAll(coversOfArtist).then((res) => {
+              numberOfCovers += res.items.length;
+              if(numberOfOriginals - numberOfCovers > 0){
+
+                setMessage("You'll be able to upload another original after you submit your next cover");
+                return;
+              } else {
+                setUploadButton(<input type="file" id="myFile" allow="audio/mp3" name="filename" onChange={(e) => handleFile(e)} ></input>);
+              }
+            })
+          })
+        })
+      }
+      
     }).catch((error) => {
       // Uh-oh, an error occurred!
     });
 
     if(file.type != 'audio/mpeg'){
       setMessage("File type must be an mp3.");
+      file = null;
+      return;
+    }
+
+    var format = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+    let fileNameString = file.name.split('.')[0]
+    if(format.test(fileNameString)){
+      setMessage("File name cannont contain any special characters")
+      file = null;
+      return;
+    } 
+
+    if(file.size / 1024 / 1024 > 10){
+      setMessage("File cannot be more than 10mb")
       file = null;
       return;
     }
@@ -705,11 +809,17 @@ function UploadSong() {
   return (
     <div>
       <div className="upload">
-        <p>Upload an original:</p>
-        <p>{message}</p>
+        <h2>Upload an original:</h2>
+        <p id="cantUpload">{message}</p>
+        {/* <div>
+          <p id="songNameLabel">Song Name</p>
+          <input id="songNameInput"></input>
+        </div> */}
         {/* <label for="songname">Song Title: </label>
         <input type="text"></input> */}
         <br></br>
+        <p>Song Title: The name of the file will be the name of the song!</p>
+        <p>File must be an mp3 less than 10mb</p>
         {uploadButton}
         <LoadingBar percent = {percent} />
       </div>
@@ -729,6 +839,21 @@ function UploadCover() {
 
   let numberOfOriginals = 0;
   let numberOfCovers = 0;
+
+  // Convert dashes to spaces in song name
+  let undashedSong = "";
+  if(song.split('-').length > 1){
+    let songWords = song.split('-');
+    for(let i = 0; i < songWords.length; i++){
+      if(i != songWords.length - 1) {
+        undashedSong = undashedSong.concat(songWords[i],' ');
+      } else {
+        undashedSong = undashedSong.concat(songWords[i])
+      }
+    }
+  } else {
+    undashedSong = song;
+  }
 
   React.useEffect(() => {
     const storage = getStorage();
@@ -778,19 +903,33 @@ function UploadCover() {
       return;
     }
 
+    var format = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+    let fileNameString = file.name.split('.')[0]
+    if(format.test(fileNameString)){
+      setMessage("File name cannont contain any special characters")
+      file = null;
+      return;
+    } 
+
+    if(file.size / 1024 / 1024 > 10){
+      setMessage("File cannot be more than 10mb")
+      file = null;
+      return;
+    }
+
     const metadata = {
       contentType: 'audio/mpeg'
     };
 
     // const storageRef = ref(storage, auth.currentUser.uid + '/covers/' + artist + "/" +  file.name);
-    const storageRef = ref(storage, auth.currentUser.uid + '/covers/' + artist + "/" + song + "/" + file.name);
+    const storageRef = ref(storage, auth.currentUser.uid + '/covers/' + artist + "/" + undashedSong + "/" + file.name);
 
 
-    // Write the pointer to the location in Storage in the Firestore Database
+    // Write the path to the file's location in Storage in the Firestore Database
     const userRef = collection(db, "users/" + artist + "/Originals");
     updateDoc(doc(userRef, song), {
       // [auth.currentUser.displayName]: auth.currentUser.uid + '/covers/' + artist + "/" + file.name
-      [globalUserName]: auth.currentUser.uid + '/covers/' + artist + "/" + song + "/" +file.name
+      [globalUserName]: auth.currentUser.uid + '/covers/' + artist + "/" + undashedSong + "/" + file.name
     });
 
     const uploadTask = uploadBytesResumable(storageRef, file, metadata);

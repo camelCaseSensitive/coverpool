@@ -80,3 +80,11 @@
 .logout {
   height: 50%;
 }
+
+#songNameLabel {
+  display: inline
+}
+
+#cantUpload {
+  color: red;
+}
