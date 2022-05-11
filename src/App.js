@@ -672,20 +672,20 @@ function UploadSong() {
       if(auth.currentUser && auth.currentUser.uid != null){
         const originalsRef = ref(storage, auth.currentUser.uid + '/originals/');
         const coversRef = ref(storage, auth.currentUser.uid + '/covers/');
-        listAll(originalsRef)
+        if(originalsRef)listAll(originalsRef)
         .then((res) => {
-          console.log(res.items.length);
+          // console.log(res.items.length);
           numberOfOriginals = res.items.length;
         }).then(() => {
-          listAll(coversRef)
+          if(coversRef) listAll(coversRef)
           .then((coverArtists) => {
             coverArtists.prefixes.forEach((coversOfArtist) => {
               listAll(coversOfArtist).then((res) => {
-                console.log(res)
+                // console.log(res)
                 numberOfCovers += res.prefixes.length
-                console.log("You've made " + numberOfCovers + " covers")
+                // console.log("You've made " + numberOfCovers + " covers")
                 if(numberOfOriginals - numberOfCovers > 0){
-                  console.log("You've uploaded " + numberOfOriginals + " originals and " + numberOfCovers + "covers")
+                  // console.log("You've uploaded " + numberOfOriginals + " originals and " + numberOfCovers + "covers")
                   setMessage("You'll be able to upload another original after you submit your next cover");
                   setUploadButton(<input type="file" id="myFile" allow="audio/mp3" name="filename" onChange={(e) => handleFile(e)} disabled ></input>);
                   return;
@@ -697,7 +697,7 @@ function UploadSong() {
             })
           })
           if(numberOfOriginals - numberOfCovers > 0){
-            console.log("You've uploaded " + numberOfOriginals + " originals and " + numberOfCovers + "covers")
+            // console.log("You've uploaded " + numberOfOriginals + " originals and " + numberOfCovers + "covers")
             setMessage("You'll be able to upload another original after you submit your next cover");
             setUploadButton(<input type="file" id="myFile" allow="audio/mp3" name="filename" onChange={(e) => handleFile(e)} disabled ></input>);
             return;
