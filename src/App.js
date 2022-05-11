@@ -92,6 +92,7 @@ function App() {
       loggedIn = true;
       console.log(user.uid)
       console.log("You are now logged in")
+      document.getElementById("myFile").disabled = false;
       setUser(user) 
       setUserProPic(user.providerData[0].photoURL)
       // setUserName(user.providerData[0].displayName)
@@ -654,76 +655,107 @@ function UploadSong() {
   const [percent, setPercent] = React.useState(null);
   const [originalUpload, setOriginalUpload] = React.useState(null);
   const [songName, setSongName] = React.useState(null);
-  const [message, setMessage] = React.useState("You'll be able to upload another original after you submit your next cover");
-  const [uploadButton, setUploadButton] = React.useState(<input type="file" id="myFile" allow="audio/mp3" name="filename" onChange={(e) => handleFile(e)} disabled></input>);
+  const [message, setMessage] = React.useState(null);
+  const [uploadButton, setUploadButton] = React.useState(<input type="file" id="myFile" allow="audio/mp3" name="filename" onChange={(e) => handleFile(e)}></input>);
 
   let numberOfOriginals = 0;
   let numberOfCovers = 0;
 
-  React.useEffect(() => {
+  // auth.onAuthStateChanged(function (user) {
+  //   if(user){
+      
+  //   }
+  // });
 
+  React.useEffect(() => {
     const storage = getStorage();
-    const originalsRef = ref(storage, auth.currentUser.uid + '/originals/');
-    const coversRef = ref(storage, auth.currentUser.uid + '/covers/');
-    listAll(originalsRef)
-    .then((res) => {
-      console.log(res.items.length);
-      numberOfOriginals = res.items.length;
-    }).then(() => {
-      listAll(coversRef)
-      .then((coverArtists) => {
-        coverArtists.prefixes.forEach((coversOfArtist) => {
-          listAll(coversOfArtist).then((res) => {
-            console.log(res)
-            numberOfCovers += res.prefixes.length
-            console.log("You've made " + numberOfCovers + " covers")
-            if(numberOfOriginals - numberOfCovers > 0){
-              console.log("You've uploaded " + numberOfOriginals + " originals and " + numberOfCovers + "covers")
-              setMessage("You'll be able to upload another original after you submit your next cover");
-              return;
-            } else {
-              setUploadButton(<input type="file" id="myFile" allow="audio/mp3" name="filename" onChange={(e) => handleFile(e)} ></input>);
-            }
+      if(auth.currentUser && auth.currentUser.uid != null){
+        const originalsRef = ref(storage, auth.currentUser.uid + '/originals/');
+        const coversRef = ref(storage, auth.currentUser.uid + '/covers/');
+        listAll(originalsRef)
+        .then((res) => {
+          console.log(res.items.length);
+          numberOfOriginals = res.items.length;
+        }).then(() => {
+          listAll(coversRef)
+          .then((coverArtists) => {
+            coverArtists.prefixes.forEach((coversOfArtist) => {
+              listAll(coversOfArtist).then((res) => {
+                console.log(res)
+                numberOfCovers += res.prefixes.length
+                console.log("You've made " + numberOfCovers + " covers")
+                if(numberOfOriginals - numberOfCovers > 0){
+                  console.log("You've uploaded " + numberOfOriginals + " originals and " + numberOfCovers + "covers")
+                  setMessage("You'll be able to upload another original after you submit your next cover");
+                  setUploadButton(<input type="file" id="myFile" allow="audio/mp3" name="filename" onChange={(e) => handleFile(e)} disabled ></input>);
+                  return;
+                } else {
+                  setMessage("");
+                  setUploadButton(<input type="file" id="myFile" allow="audio/mp3" name="filename" onChange={(e) => handleFile(e)} ></input>);
+                }
+              })
+            })
           })
-        })
-      })
-    }).catch((error) => {
-      // Uh-oh, an error occurred!
-    });
+          if(numberOfOriginals - numberOfCovers > 0){
+            console.log("You've uploaded " + numberOfOriginals + " originals and " + numberOfCovers + "covers")
+            setMessage("You'll be able to upload another original after you submit your next cover");
+            setUploadButton(<input type="file" id="myFile" allow="audio/mp3" name="filename" onChange={(e) => handleFile(e)} disabled ></input>);
+            return;
+          } else {
+            setMessage("");
+            setUploadButton(<input type="file" id="myFile" allow="audio/mp3" name="filename" onChange={(e) => handleFile(e)} ></input>);
+          }
+        }).catch((error) => {
+          // Uh-oh, an error occurred!
+        });
+      } else {
+        setMessage("You must be logged in to upload a song.  If you are logged in navigate here from the home page.");
+        setUploadButton(<input type="file" id="myFile" allow="audio/mp3" name="filename" onChange={(e) => handleFile(e)} disabled ></input>);
+      }
   }, [])
 
   function handleFile(e){
     let file = e.target.files[0];
 
     const storage = getStorage();
-    const originalsRef = ref(storage, auth.currentUser.uid + '/originals/');
-    const coversRef = ref(storage, auth.currentUser.uid + '/covers/');
-    listAll(originalsRef)
-    .then((res) => {
-      console.log(res.items.length);
-      numberOfOriginals = res.items.length;
-    }).then(() => {
-      if(numberOfCovers == 0){
-        listAll(coversRef)
-        .then((coverArtists) => {
-          coverArtists.prefixes.forEach((coversOfArtist) => {
-            listAll(coversOfArtist).then((res) => {
-              numberOfCovers += res.items.length;
-              if(numberOfOriginals - numberOfCovers > 0){
-
-                setMessage("You'll be able to upload another original after you submit your next cover");
-                return;
-              } else {
-                setUploadButton(<input type="file" id="myFile" allow="audio/mp3" name="filename" onChange={(e) => handleFile(e)} ></input>);
-              }
-            })
-          })
-        })
-      }
+    // const originalsRef = ref(storage, auth.currentUser.uid + '/originals/');
+    // const coversRef = ref(storage, auth.currentUser.uid + '/covers/');
+    // listAll(originalsRef)
+    // .then((res) => {
+    //   console.log(res.items.length);
+    //   numberOfOriginals = res.items.length;
+    // }).then(() => {
+    //   if(numberOfCovers == 0){
+    //     listAll(coversRef)
+    //     .then((coverArtists) => {
+    //       coverArtists.prefixes.forEach((coversOfArtist) => {
+    //         listAll(coversOfArtist).then((res) => {
+    //           numberOfCovers += res.items.length;
+    //           if(numberOfOriginals - numberOfCovers > 0){
+    //             setMessage("You'll be able to upload another original after you submit your next cover");
+    //             setUploadButton(<input type="file" id="myFile" allow="audio/mp3" name="filename" onChange={(e) => handleFile(e)} disabled ></input>);
+    //             return;
+    //           } else {
+    //             setMessage("");
+    //             setUploadButton(<input type="file" id="myFile" allow="audio/mp3" name="filename" onChange={(e) => handleFile(e)} ></input>);
+    //           }
+    //         })
+    //       })
+    //     })
+    //     if(numberOfOriginals - numberOfCovers > 0){
+    //       console.log("You've uploaded " + numberOfOriginals + " originals and " + numberOfCovers + "covers")
+    //       setMessage("You'll be able to upload another original after you submit your next cover");
+    //       setUploadButton(<input type="file" id="myFile" allow="audio/mp3" name="filename" onChange={(e) => handleFile(e)} disabled ></input>);
+    //       return;
+    //     } else {
+    //       setMessage("");
+    //       setUploadButton(<input type="file" id="myFile" allow="audio/mp3" name="filename" onChange={(e) => handleFile(e)} ></input>);
+    //     }
+    //   }
       
-    }).catch((error) => {
-      // Uh-oh, an error occurred!
-    });
+    // }).catch((error) => {
+    //   // Uh-oh, an error occurred!
+    // });
 
     if(file.type != 'audio/mpeg'){
       setMessage("File type must be an mp3.");
@@ -854,24 +886,31 @@ function UploadCover() {
   } else {
     undashedSong = song;
   }
+  console.log(undashedSong)
+
+  // React.useEffect(() => {
+  //   const storage = getStorage();
+  //   const originalsRef = ref(storage, auth.currentUser.uid + '/originals/');
+  //   const coversRef = ref(storage, auth.currentUser.uid + '/covers/');
+  //   listAll(originalsRef)
+  //   .then((res) => {
+  //     console.log(res.items.length);
+  //     numberOfOriginals = res.items.length;
+  //   }).then(() => {
+  //     listAll(coversRef)
+  //     .then((res) => {
+  //       numberOfCovers = res.items.length;
+  //       setUploadButton(<input type="file" id="myFile" allow="audio/mp3" name="filename" onChange={(e) => handleFile(e)} ></input>);
+  //     })
+  //   }).catch((error) => {
+  //     // Uh-oh, an error occurred!
+  //   });
+  // }, [])
 
   React.useEffect(() => {
-    const storage = getStorage();
-    const originalsRef = ref(storage, auth.currentUser.uid + '/originals/');
-    const coversRef = ref(storage, auth.currentUser.uid + '/covers/');
-    listAll(originalsRef)
-    .then((res) => {
-      console.log(res.items.length);
-      numberOfOriginals = res.items.length;
-    }).then(() => {
-      listAll(coversRef)
-      .then((res) => {
-        numberOfCovers = res.items.length;
-        setUploadButton(<input type="file" id="myFile" allow="audio/mp3" name="filename" onChange={(e) => handleFile(e)} ></input>);
-      })
-    }).catch((error) => {
-      // Uh-oh, an error occurred!
-    });
+    if(auth.currentUser && auth.currentUser.uid != null){
+      setUploadButton(<input type="file" id="myFile" allow="audio/mp3" name="filename" onChange={(e) => handleFile(e)} ></input>)
+    }
   }, [])
 
   function handleFile(e){
@@ -883,19 +922,19 @@ function UploadCover() {
 
     // Count the number of originals and covers that a user has
     // Used to limit the number of original uploads a user can have
-    listAll(originalsRef)
-    .then((res) => {
-      console.log(res.items.length);
-      numberOfOriginals = res.items.length;
-    }).then(() => {
-      listAll(coversRef)
-      .then((res) => {
-        numberOfCovers = res.items.length;
-        console.log(numberOfOriginals, numberOfCovers);
-      })
-    }).catch((error) => {
-      // Uh-oh, an error occurred!
-    });
+    // listAll(originalsRef)
+    // .then((res) => {
+    //   console.log(res.items.length);
+    //   numberOfOriginals = res.items.length;
+    // }).then(() => {
+    //   listAll(coversRef)
+    //   .then((res) => {
+    //     numberOfCovers = res.items.length;
+    //     console.log(numberOfOriginals, numberOfCovers);
+    //   })
+    // }).catch((error) => {
+    //   // Uh-oh, an error occurred!
+    // });
 
     if(file.type != 'audio/mpeg'){
       setMessage("File type must be an mp3.");
@@ -927,7 +966,7 @@ function UploadCover() {
 
     // Write the path to the file's location in Storage in the Firestore Database
     const userRef = collection(db, "users/" + artist + "/Originals");
-    updateDoc(doc(userRef, song), {
+    updateDoc(doc(userRef, undashedSong), {
       // [auth.currentUser.displayName]: auth.currentUser.uid + '/covers/' + artist + "/" + file.name
       [globalUserName]: auth.currentUser.uid + '/covers/' + artist + "/" + undashedSong + "/" + file.name
     });
