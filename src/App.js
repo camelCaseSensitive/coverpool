@@ -216,7 +216,7 @@ function App() {
   } else {
     return (
       <Router>
-        <div>
+        <div id="entireApp">
           {/* <h1>{userName}</h1> */}
           <nav className="nav-bar">
             <div className='header'>
@@ -267,7 +267,7 @@ function App() {
 class Home extends React.Component {
   render() {
     return (
-      <div>
+      <div class="Home">
         <h2>Home</h2>
         <p>Welcome to Coverpool.</p>
         <p>This will be a feed of recent user activity and a featured cover in the futute.</p> 
@@ -286,7 +286,7 @@ class Home extends React.Component {
 
 function About() {
   return (
-    <div>
+    <div class="About">
       <h2>About</h2>
       <p>Coverpool is a place for songwriters to discover and share music by covering each other's songs.</p>
       <h3>How it works</h3>
@@ -323,7 +323,7 @@ function Users() {
   
   let users = ['Albert', 'Bob', 'Carl', 'Dave']
   return (
-    <div>
+    <div class="Users">
       <nav>
             <ul>
               {usersArray}
@@ -440,7 +440,7 @@ function UserProfile() {
   }, [username])
 
   return (
-    <div>
+    <div class="UserProfile">
       <h2>{username}</h2>
       <img src={userPic}/>
       <h3>Originals</h3>
@@ -550,7 +550,7 @@ function UserOriginal() {
 
   if(user != globalUserName) {
     return (
-      <div>
+      <div class="Original">
         <h2>{undashedSong}</h2>
         <div>{songComponent}</div>
         <h3>Cover Versions by</h3>
@@ -562,11 +562,11 @@ function UserOriginal() {
     );
   } else {
     return (
-      <div>
+      <div class="Original">
         <h2>{undashedSong}</h2>
         <div>{songComponent}</div>
         <h3>Cover Versions by</h3>
-        <nav>
+        <nav class="Original">
           {coversComponent}
         </nav>
       </div>
@@ -630,7 +630,7 @@ function UserCover() {
   }, [])
 
   return (
-    <div>
+    <div class="Cover">
       <h2>{song}</h2>
       <div>{songComponent}</div>
       <h4>Cover by <Link to={"/user/" + user}>{user}</Link></h4>
@@ -641,7 +641,7 @@ function UserCover() {
 
 function SongPlayer(props) {
     return (
-        <div>
+        <div class="SongPlayer">
             {/* <p >{props.songName ? props.songName.slice(0,-4) : "unnamed"}</p> */}
             <audio controls className="Player">
                 <source src={props.songSource} type="audio/mpeg" />
@@ -838,7 +838,7 @@ function UploadSong() {
   }
 
   return (
-    <div>
+    <div class="UploadOriginal">
       <div className="upload">
         <h2>Upload an original:</h2>
         <p id="cantUpload">{message}</p>

@@ -44,6 +44,7 @@
   margin: 0;
   padding: 0;
   /* border: 2px solid red; */
+  background: rgb(216, 216, 216)
 }
 
 .nav-bar-links {
@@ -87,4 +88,24 @@
 
 #cantUpload {
   color: red;
+}
+
+.Home {
+  padding: 0px 20px;
+}
+
+.UserProfile {
+  padding: 0px 20px;
+}
+
+.UploadOriginal {
+  padding: 0px 20px;
+}
+
+.Original {
+  padding: 0px 20px;
+}
+
+.About {
+  padding: 0px 20px;
 }
