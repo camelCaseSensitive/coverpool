@@ -81,12 +81,6 @@ function App() {
   const [hasUsername, setHasUsername] = React.useState("tbd");
   const [usernameAvailable, setUsernameAvailable] = React.useState("")
   const [availabilityMessage, setAvailabilityMessage] = React.useState(true)
-  // console.log("Current user was " + auth.currentUser)
-
-  // React.useEffect(() => {
-  //   console.log("WELL FUCK, BETTER LOG IN")
-  //   setFuck("fuck")
-  // }, [hasUsername])
 
   auth.onAuthStateChanged(function (user) {
     if(user){
@@ -305,26 +299,31 @@ function About() {
 
 function Users() {
   const [usersArray, setUsersArray] = React.useState([])
-
   React.useEffect(() => {
     let dbUsernames = [];
+    // let numberOfUsers = 0;
     dbGet(dbRef(rtdb, "/users/")).then((res) => {
       res.forEach((u) => {
-        console.log(u._node.value_)
-        // if(u._node.value_ != "default") dbUsernames.push(u._node.value_)
-        if(u._node.value_ != "default") dbUsernames.push(<li><Link to={"/user/" + u._node.value_}>{u._node.value_}</Link></li>)
+        // let userImgSrc;
+        // numberOfUsers += 1;
+        if(u._node.value_ != "default") {
+          // // Tried adding pictures
+          // getDoc(doc(db, "users", u._node.value_)).then((docSnap) => {
+          //   userImgSrc = docSnap.data().propic;
+          //   console.log(userImgSrc)
+          //   dbUsernames.push(<li key={u._node.value_}><div><img src={userImgSrc}/><Link to={"/user/" + u._node.value_}>{u._node.value_}</Link></div></li>)
+          //   // console.log(dbUsernames)
+          // })
+          dbUsernames.push(<li key={u._node.value_}><Link to={"/user/" + u._node.value_}>{u._node.value_}</Link></li>)
+        }
       })
-      // 
-      console.log(usersArray)
+    }).then(() => {
       setUsersArray(dbUsernames)
     })
-    
   }, [])
   
-  
-  let users = ['Albert', 'Bob', 'Carl', 'Dave']
   return (
-    <div class="Users">
+    <div className="Users">
       <h2>Users</h2>
       <nav>
         <ul>
@@ -442,7 +441,7 @@ function UserProfile() {
   }, [username])
 
   return (
-    <div class="UserProfile">
+    <div className="UserProfile">
       <h2>{username}</h2>
       <img src={userPic}/>
       <h3>Originals</h3>
@@ -477,7 +476,7 @@ function UserOriginal() {
   const song = useParams()['song'];
   const user = useParams()['username']
   const [songComponent, setSongComponent] = React.useState(null);
-  const [coversComponent, setCoversComponent] = React.useState(null);
+  const [coversComponent, setCoversComponent] = React.useState(<p>No covers yet</p>);
   let coveredBy = ["Allen", "Brian", "Cindy", "Daniel"];
   let uid;
   console.log(song)
@@ -529,13 +528,13 @@ function UserOriginal() {
         console.log("user/" + coverArtist + "/Covers/" + user + "/" + song)
         if(coverArtist != 'default'){
           coversArray.push(
-            <li>
+            <li key={coverArtist + song}>
               <Link to={"/user/" + coverArtist + "/Covers/" + user + "/" + song}>{coverArtist}</Link>
             </li>
           )
         }
       }
-      setCoversComponent(coversArray)
+      if(coversArray.length > 0) setCoversComponent(coversArray)
     })
     // .then(() => {
     //   const storage = getStorage();
@@ -552,7 +551,7 @@ function UserOriginal() {
 
   if(user != globalUserName) {
     return (
-      <div class="Original">
+      <div className="Original">
         <h2>{undashedSong}</h2>
         <div>{songComponent}</div>
         <h3>Cover Versions by</h3>
@@ -564,7 +563,7 @@ function UserOriginal() {
     );
   } else {
     return (
-      <div class="Original">
+      <div className="Original">
         <h2>{undashedSong}</h2>
         <div>{songComponent}</div>
         <h3>Cover Versions by</h3>
@@ -632,8 +631,8 @@ function UserCover() {
   }, [])
 
   return (
-    <div class="Cover">
-      <h2>{song}</h2>
+    <div className="Cover">
+      <h2>{undashedSong}</h2>
       <div>{songComponent}</div>
       <h4>Cover by <Link to={"/user/" + user}>{user}</Link></h4>
       <h3>Originally by <Link to={"/user/" + artist}>{artist}</Link></h3>
@@ -643,7 +642,7 @@ function UserCover() {
 
 function SongPlayer(props) {
     return (
-        <div class="SongPlayer">
+        <div className="SongPlayer">
             {/* <p >{props.songName ? props.songName.slice(0,-4) : "unnamed"}</p> */}
             <audio controls className="Player">
                 <source src={props.songSource} type="audio/mpeg" />
@@ -842,7 +841,7 @@ function UploadSong() {
   }
 
   return (
-    <div class="UploadOriginal">
+    <div className="UploadOriginal">
       <div className="upload">
         <h2>Upload an original:</h2>
         <p id="cantUpload">{message}</p>
@@ -853,8 +852,8 @@ function UploadSong() {
         {/* <label for="songname">Song Title: </label>
         <input type="text"></input> */}
         {/* <br></br> */}
-        <p>Song Title: The name of the file will be the name of the song!</p>
-        <p>File must be an mp3 less than 10mb</p>
+        <p><strong>Song Title:</strong> <em>The name of the file will be the name of the song!</em></p>
+        <p>file must be an mp3 less than 10mb</p>
         {uploadButton}
         <LoadingBar percent = {percent} />
       </div>
