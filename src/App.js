@@ -92,7 +92,7 @@ function App() {
       loggedIn = true;
       console.log(user.uid)
       console.log("You are now logged in")
-      document.getElementById("myFile").disabled = false;
+      if(document.getElementById("myFile")) document.getElementById("myFile").disabled = false;
       setUser(user) 
       setUserProPic(user.providerData[0].photoURL)
       // setUserName(user.providerData[0].displayName)
