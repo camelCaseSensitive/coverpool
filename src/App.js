@@ -672,12 +672,12 @@ function UploadSong() {
       if(auth.currentUser && auth.currentUser.uid != null){
         const originalsRef = ref(storage, auth.currentUser.uid + '/originals/');
         const coversRef = ref(storage, auth.currentUser.uid + '/covers/');
-        if(originalsRef)listAll(originalsRef)
+        listAll(originalsRef)
         .then((res) => {
           // console.log(res.items.length);
           numberOfOriginals = res.items.length;
         }).then(() => {
-          if(coversRef) listAll(coversRef)
+          listAll(coversRef)
           .then((coverArtists) => {
             coverArtists.prefixes.forEach((coversOfArtist) => {
               listAll(coversOfArtist).then((res) => {
