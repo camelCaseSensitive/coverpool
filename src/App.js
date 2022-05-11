@@ -3,7 +3,8 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Link
+  Link, 
+  Navigate
 } from "react-router-dom";
 import { useParams } from 'react-router';
 import './App.css';
@@ -292,7 +293,7 @@ function About() {
       <h3>How it works</h3>
       <ol>
         <li>Login with Google</li>
-        <li>You will then be prompted to create a username</li>
+        <li>You'll then be prompted to create a username</li>
         <li>Upload an original</li>
         <li>Cover other artists</li>
         <li>Each cover you submit lets you upload one more original</li>
@@ -324,11 +325,12 @@ function Users() {
   let users = ['Albert', 'Bob', 'Carl', 'Dave']
   return (
     <div class="Users">
+      <h2>Users</h2>
       <nav>
-            <ul>
-              {usersArray}
-            </ul>
-          </nav>
+        <ul>
+          {usersArray}
+        </ul>
+      </nav>
     </div>
   )
 }
@@ -708,8 +710,10 @@ function UploadSong() {
           // Uh-oh, an error occurred!
         });
       } else {
-        setMessage("You must be logged in to upload a song.  If you are logged in navigate here from the home page.");
-        setUploadButton(<input type="file" id="myFile" allow="audio/mp3" name="filename" onChange={(e) => handleFile(e)} disabled ></input>);
+        // <Navigate to="/About" />;
+        window.location.href = '/'
+        // setUploadButton(<input type="file" id="myFile" allow="audio/mp3" name="filename" onChange={(e) => handleFile(e)} disabled ></input>);
+        // setMessage("You must be logged in to upload a song.  If you are logged in navigate here from the home page.");
       }
   }, [])
 
