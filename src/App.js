@@ -548,31 +548,30 @@ function UserOriginal() {
 
   }, [])
 
-  return (
-    <div>
-      <h2>{undashedSong}</h2>
-      <div>{songComponent}</div>
-      <h3>Cover Versions by</h3>
-      <nav>
-        {coversComponent}
-        {/* <ul>
-          <li>
-            <Link to={"/user/" + coveredBy[0] + "/covers/" + user + "/" + song}>song1</Link>
-          </li>
-          <li>
-            <Link to={"/user/" + coveredBy[1] + "/covers/" + user + "/" + song}>song2</Link>
-          </li>
-          <li>
-            <Link to={"/user/" + coveredBy[2] + "/covers/" + user + "/" + song}>song3</Link>
-          </li>
-          <li>
-            <Link to={"/user/" + coveredBy[3] + "/covers/" + user + "/" + song}>song4</Link>
-          </li>
-        </ul> */}
-      </nav>
-      <UploadCover/>
-    </div>
-  );
+  if(user != globalUserName) {
+    return (
+      <div>
+        <h2>{undashedSong}</h2>
+        <div>{songComponent}</div>
+        <h3>Cover Versions by</h3>
+        <nav>
+          {coversComponent}
+        </nav>
+        <UploadCover/>
+      </div>
+    );
+  } else {
+    return (
+      <div>
+        <h2>{undashedSong}</h2>
+        <div>{songComponent}</div>
+        <h3>Cover Versions by</h3>
+        <nav>
+          {coversComponent}
+        </nav>
+      </div>
+    );
+  }
 }
 
 function UserCover() {
