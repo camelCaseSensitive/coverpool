@@ -437,7 +437,7 @@ function UserProfile() {
         // Uh-oh, an error occurred!
       });
     })
-  }, [])
+  }, [username])
 
   return (
     <div>
