@@ -156,6 +156,7 @@ function App() {
     setUser(null) 
     setUserProPic(null)
     setUserName(null)
+    window.location.href = '/'
   }
 
   if(hasUsername === false){
@@ -346,6 +347,9 @@ function UserProfile() {
 
   React.useEffect(() => {
     // console.log("This will only run once!")
+
+    originalsComponentArray = [];
+    coversComponentArray = [];
     
     getDoc(doc(db, "users", username)).then((docSnap) => {
       let profs = [];
