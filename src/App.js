@@ -217,7 +217,7 @@ function App() {
           <nav className="nav-bar">
             <div className='header'>
               <Link to={"/user/" + userName}><img className="profile" src={userProPic}/></Link>
-              <h1>CVRPL</h1>
+              <h1 id="cvrpl">CVRPL</h1>
             </div>
             <ul className="nav-bar-links">
               <li className="nav-bar-link">
@@ -263,10 +263,10 @@ function App() {
 class Home extends React.Component {
   render() {
     return (
-      <div class="Home">
+      <div className="Home">
         <h2>Home</h2>
         <p>Welcome to Coverpool.</p>
-        <p>This will be a feed of recent user activity and a featured cover in the futute.</p> 
+        <p>This homepage will show recent user activity and a featured cover each week.</p> 
         <p>In the meantime browse the site's users to discover new artists and songs.</p>
         <nav>
             <ul>
@@ -567,7 +567,7 @@ function UserOriginal() {
         <h2>{undashedSong}</h2>
         <div>{songComponent}</div>
         <h3>Cover Versions by</h3>
-        <nav class="Original">
+        <nav className="Original">
           {coversComponent}
         </nav>
       </div>

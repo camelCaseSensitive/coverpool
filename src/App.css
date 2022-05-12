@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  font-family: 'Trebuchet MS', sans-serif;
 }
 
 .App-logo {
@@ -44,7 +45,9 @@
   margin: 0;
   padding: 0;
   /* border: 2px solid red; */
-  background: rgb(216, 216, 216)
+  background: rgb(216, 216, 216);
+  font-family: 'Koulen', cursive;
+  /* font-size: 2em; */
 }
 
 .nav-bar-links {
@@ -71,18 +74,20 @@
 }
 
 .profile {
-  border-radius: 50%
+  border-radius: 50%;
+  padding: 10px
 }
 
 .login {
  height: 50%;
  padding: 10px;
+ margin: 10px 0px 10px 0px;
 }
 
 .logout {
   height: 50%;
- padding: 10px;
-
+  padding: 10px;
+  margin: 10px 10px 10px 5px;
 }
 
 #songNameLabel {
@@ -115,4 +120,20 @@
 
 .Users {
   padding: 0px 20px;
+}
+
+/* #myFile {
+  width: 200px;
+  background: green;
+} */
+
+#cvrpl {
+  -webkit-user-select: none; /* Safari */        
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+/Edge */
+  user-select: none; /* Standard */
+}
+
+#userList {
+  list-style-image: url("https://lh3.googleusercontent.com/a-/AOh14Gj6ZFmEwPkckIiju-t2Y34PS3B0oIOylxyzOlg=s96-c")
 }
