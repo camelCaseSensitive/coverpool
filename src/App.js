@@ -347,13 +347,6 @@ function UserProfile() {
 
   React.useEffect(() => {
     // console.log("This will only run once!")
-
-    originalsComponentArray = [];
-    setUserOriginals(originalsComponentArray)
-    coversComponentArray = [];
-    setUserCovers(coversComponentArray)
-
-    
     getDoc(doc(db, "users", username)).then((docSnap) => {
       let profs = [];
       // console.log(docSnap.data())
