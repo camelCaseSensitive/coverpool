@@ -1,6 +1,7 @@
 .App {
   text-align: center;
   font-family: 'Trebuchet MS', sans-serif;
+  
 }
 
 .App-logo {
@@ -45,7 +46,7 @@
   margin: 0;
   padding: 0;
   /* border: 2px solid red; */
-  background: rgb(216, 216, 216);
+  background: #f6ffc8;
   font-family: 'Koulen', cursive;
   /* font-size: 2em; */
 }
@@ -122,6 +123,10 @@
   padding: 0px 20px;
 }
 
+body {
+  background: #FFFBF3;
+}
+
 /* #myFile {
   width: 200px;
   background: green;
@@ -134,6 +139,3 @@
   user-select: none; /* Standard */
 }
 
-#userList {
-  list-style-image: url("https://lh3.googleusercontent.com/a-/AOh14Gj6ZFmEwPkckIiju-t2Y34PS3B0oIOylxyzOlg=s96-c")
-}

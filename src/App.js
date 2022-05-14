@@ -265,16 +265,17 @@ class Home extends React.Component {
     return (
       <div className="Home">
         <h2>Home</h2>
-        <p>Welcome to Coverpool.</p>
-        <p>This homepage will show recent user activity and a featured cover each week.</p> 
-        <p>In the meantime browse the site's users to discover new artists and songs.</p>
+        <p><a href="/user/ScottH">ScottH</a> uploaded <a href="/user/ScottH/originals/pearl">pearl</a></p>
+        <p><a href="/user/doahnean">doahnean</a> uploaded <a href="/user/doeahnean/originals/dandelion">dandelion</a></p>
+        <p><a href="/user/8bitwizrd">8bitwizrd</a> uploaded <a href="/user/8bitwizrd/originals/Blue">Blue</a></p>
+        {/* <p>Browse more users</p>
         <nav>
             <ul>
               <li>
                 <Link to="/users">Users</Link>
               </li>
             </ul>
-          </nav>
+          </nav> */}
       </div>
     ) 
   }
