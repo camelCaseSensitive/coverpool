@@ -266,7 +266,7 @@ class Home extends React.Component {
       <div className="Home">
         <h2>Home</h2>
         <p><a href="/user/ScottH">ScottH</a> uploaded <a href="/user/ScottH/originals/pearl">pearl</a></p>
-        <p><a href="/user/doahnean">doahnean</a> uploaded <a href="/user/doahnean/originals/dandelion"></a></p>
+        <p><a href="/user/doahnean">doahnean</a> uploaded <a href="/user/doahnean/originals/dandelion">dandelion</a></p>
         <p><a href="/user/8bitwizrd">8bitwizrd</a> uploaded <a href="/user/8bitwizrd/originals/Blue">Blue</a></p>
         {/* <p>Browse more users</p>
         <nav>
