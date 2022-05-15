@@ -265,6 +265,14 @@ class Home extends React.Component {
     return (
       <div className="Home">
         <h2>Home</h2>
+        <h3>Featured Cover: </h3>
+        <a href="/user/mallardwest/covers/doahnean/dandelion"> doahnean - dandelion (cover by mallardwest) </a> 
+        <SongPlayer songSource={'https://firebasestorage.googleapis.com/v0/b/coverpool-c532b.appspot.com/o/7R5T6CBpJHZF1wITzyLgWhvdfEI3%2Fcovers%2Fdoahnean%2Fdandelion%2Fdandelion%20written%20by%20doahnean%20and%20performed%20by%20mallard%20westcott%20on%20banjo.mp3?alt=media&token=12198219-0485-4018-870c-31a816f66665'} songName = "Dandelion" />
+
+        <h3>User Activity: </h3>
+        <p><a href="/user/mott">mott</a> uploaded <a href="/user/mott/originals/Bald-patch">Bald patch</a></p>
+        <p><a href="/user/Wombat_Rob">Wombat_Rob</a> uploaded <a href="/user/Wombat_Rob/originals/The-Fuzzy-Caterpillar">The Fuzzy Caterpillar</a></p>
+        <p><a href="/user/mallardwest">mallardwest</a> posted a <a href="/user/mallardwest/covers/doahnean/dandelion"> cover of dandelion </a> by <a href="/user/doahnean">doahnean</a></p>
         <p><a href="/user/sammy77">sammy77</a> uploaded <a href="/user/sammy77/originals/kill-rock-stars-2">kill rock stars 2</a></p>
         <p><a href="/user/bentzboy887">bentzboy887</a> uploaded <a href="/user/bentzboy887/originals/HIGH-TIMES">HIGH TIMES</a></p>
         <p><a href="/user/ScottH">ScottH</a> uploaded <a href="/user/ScottH/originals/pearl">pearl</a></p>
