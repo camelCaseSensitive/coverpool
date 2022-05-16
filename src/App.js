@@ -270,6 +270,8 @@ class Home extends React.Component {
         <SongPlayer songSource={'https://firebasestorage.googleapis.com/v0/b/coverpool-c532b.appspot.com/o/7R5T6CBpJHZF1wITzyLgWhvdfEI3%2Fcovers%2Fdoahnean%2Fdandelion%2Fdandelion%20written%20by%20doahnean%20and%20performed%20by%20mallard%20westcott%20on%20banjo.mp3?alt=media&token=12198219-0485-4018-870c-31a816f66665'} songName = "Dandelion" />
 
         <h3>User Activity: </h3>
+        <p><a href="/user/Anry">Anry</a> posted a <a href="/user/Anry/covers/mott/Bald-patch"> cover of Bald patch </a> by <a href="/user/mott">mott</a></p>
+        <p><a href="/user/Anry">Anry</a> posted a <a href="/user/Anry/covers/doahnean/dandelion"> cover of dandelion </a> by <a href="/user/doahnean">doahnean</a></p>
         <p><a href="/user/sammy77">sammy77</a> posted a <a href="/user/sammy77/covers/Anry/Marsha-at-the-Door"> cover of Marsha at the Door </a> by <a href="/user/Anry">Anry</a></p>
         <p><a href="/user/mott">mott</a> uploaded <a href="/user/mott/originals/Bald-patch">Bald patch</a></p>
         <p><a href="/user/Wombat_Rob">Wombat_Rob</a> uploaded <a href="/user/Wombat_Rob/originals/The-Fuzzy-Caterpillar">The Fuzzy Caterpillar</a></p>
