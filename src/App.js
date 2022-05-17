@@ -33,7 +33,7 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
 const rtdb = getDatabase();
-console.log(rtdb)
+// console.log(rtdb)
 const auth = getAuth();
 const googleAuth = GoogleAuthProvider;
 const getRedirect = getRedirectResult;
@@ -85,8 +85,8 @@ function App() {
   auth.onAuthStateChanged(function (user) {
     if(user){
       loggedIn = true;
-      console.log(user.uid)
-      console.log("You are now logged in")
+      // console.log(user.uid)
+      // console.log("You are now logged in")
       if(document.getElementById("myFile")) document.getElementById("myFile").disabled = false;
       setUser(user) 
       setUserProPic(user.providerData[0].photoURL)
@@ -96,12 +96,12 @@ function App() {
       const yourUsername = dbRef(rtdb, "/users/" + auth.currentUser.uid);
       dbGet(yourUsername).then((res) => {
         if(res._node.value_){
-          console.log(res._node.value_)
+          // console.log(res._node.value_)
           setUserName(res._node.value_)
           globalUserName = res._node.value_;
         } else {
           setHasUsername(false)
-          console.log("Need to create a username")
+          // console.log("Need to create a username")
         }
       })
     
@@ -119,8 +119,8 @@ function App() {
   });
 
   function login() {
-    console.log("LOGIN!")
-    console.log(auth.currentUser)
+    // console.log("LOGIN!")
+    // console.log(auth.currentUser)
     if(!auth.currentUser){
         signIn(auth, provider);
         getRedirect(auth)
@@ -136,7 +136,7 @@ function App() {
             //   // setUserName(auth.currentUser.providerData[0].displayName)
             // });
         }).catch((error) => {
-            console.log("There was an error")
+            // console.log("There was an error")
             // Handle Errors here.
             const errorCode = error.code;
             const errorMessage = error.message;
@@ -166,7 +166,7 @@ function App() {
         <p>- 3-20 characters</p>
         <p>- no spaces or special characters</p>
         <input id="newusername" onKeyUp={() => {
-          console.log("keyup")
+          // console.log("keyup")
           newUsername = document.getElementById("newusername").value;
 
           var usernameFormat = /^(\d{3,20}|\w{3,20}){1}$/;;
@@ -412,7 +412,7 @@ function UserProfile() {
       });
 
       const coversRef = ref(storage, uid + '/covers');
-      console.log(coversRef)
+      // console.log(coversRef)
       let numberOfCovers = 0;
       let originalArtist;
       let originalSongName;
@@ -427,7 +427,7 @@ function UserProfile() {
               listAll(songRef).then((song) => {
                 for(let j = 0; j < song.items.length; j++){
                   numberOfCovers += 1;
-                  console.log(song.items[0]._location.path_)
+                  // console.log(song.items[0]._location.path_)
                   let songPath = song.items[j]._location.path_.split('/');
                   getDownloadURL(song.items[j]).then((url) => {
                     originalArtist = song.items[0]._location.path_.split('/')[2]; 
@@ -447,7 +447,7 @@ function UserProfile() {
                     }
                     coversComponentArray.push(<li key={url}><Link to={"/user/" + username + "/covers/" + originalArtist + "/" + originalSongName}>{originalArtist + " - " + song.items[0]._location.path_.split('/')[3]}</Link></li>);
                   }).then(() => {
-                    console.log(numberOfCovers)
+                    // console.log(numberOfCovers)
                     if(coversComponentArray.length == numberOfCovers) {
                       setUserCovers(coversComponentArray)
                     }
@@ -489,7 +489,7 @@ function UserProfile() {
 function UserContent() {
   const song = useParams()['content'];
   // let coverVersions = {artist1: song, artist: song, artist: song, 'Cover4'};
-  console.log(song)
+  // console.log(song)
   return (
     <div>
       <h2>{song}</h2>
@@ -504,7 +504,7 @@ function UserOriginal() {
   const [coversComponent, setCoversComponent] = React.useState(<p>No covers yet</p>);
   let coveredBy = ["Allen", "Brian", "Cindy", "Daniel"];
   let uid;
-  console.log(song)
+  // console.log(song)
 
   // Convert dashes to spaces in song name
   let undashedSong = "";
@@ -523,7 +523,7 @@ function UserOriginal() {
 
 
   React.useEffect(() => {
-    console.log("This will only run once!")
+    // console.log("This will only run once!")
     
     // getData();
     getDoc(doc(db, "users", user)).then((docSnap) => {
@@ -536,7 +536,7 @@ function UserOriginal() {
       const storage = getStorage();
       const itemRef = ref(storage, uid + '/originals/'+ undashedSong + ".mp3");
       getDownloadURL(itemRef).then((url) => {
-        console.log(url)
+        // console.log(url)
         setSongComponent(<SongPlayer songSource={url} songName = {undashedSong} />)
       }).catch((error) => {
         console.log(error)
@@ -544,13 +544,13 @@ function UserOriginal() {
     })
 
     getDoc(doc(db, "users/" + user + "/Originals/" + undashedSong)).then((docSnap) => {
-      console.log(docSnap.data())
+      // console.log(docSnap.data())
       let coverVersions = docSnap.data();
       let coversArray = [];
-      console.log(coverVersions)
+      // console.log(coverVersions)
       for (const coverArtist in coverVersions) {
-        console.log(coverArtist, coverVersions[coverArtist]);
-        console.log("user/" + coverArtist + "/Covers/" + user + "/" + song)
+        // console.log(coverArtist, coverVersions[coverArtist]);
+        // console.log("user/" + coverArtist + "/Covers/" + user + "/" + song)
         if(coverArtist != 'default'){
           coversArray.push(
             <li key={coverArtist + song}>
@@ -607,7 +607,7 @@ function UserCover() {
   const [songComponent, setSongComponent] = React.useState(null);
   let uid;
   let coveredBy = ["Allen", "Brian", "Cindy", "Daniel"];
-  console.log(song)
+  // console.log(song)
 
   // Convert dashes to spaces in song name
   let undashedSong = "";
@@ -625,7 +625,7 @@ function UserCover() {
   }
 
   React.useEffect(() => {
-    console.log("This will only run once!")
+    // console.log("This will only run once!")
     
     // getData();
     getDoc(doc(db, "users", user)).then((docSnap) => {
@@ -639,13 +639,13 @@ function UserCover() {
 
       const userRef = collection(db, "users/" + artist + "/Originals/");
       getDoc(doc(userRef, undashedSong)).then((songFile) => {
-        console.log(songFile._document.data.value.mapValue.fields[user].stringValue.split('/')[3])
+        // console.log(songFile._document.data.value.mapValue.fields[user].stringValue.split('/')[3])
         const itemRef = ref(storage, uid + '/covers/'+ artist + "/" + songFile._document.data.value.mapValue.fields[user].stringValue.split('/')[3]);
         listAll(itemRef).then((song) => {
-          console.log(song.items[0]._location.path_)
+          // console.log(song.items[0]._location.path_)
           // console.log(itemRef)
           getDownloadURL(ref(storage, song.items[0]._location.path_)).then((url) => {
-            console.log(url)
+            // console.log(url)
             setSongComponent(<SongPlayer songSource={url} songName = {song} />)
           }).catch((error) => {
             console.log(error)
@@ -811,7 +811,7 @@ function UploadSong() {
     const storageRef = ref(storage, auth.currentUser.uid + '/originals/' + file.name);
 
     const userRef = collection(db, "users/" + globalUserName + "/Originals/");
-    console.log(userRef)
+    // console.log(userRef)
     setDoc(doc(userRef, file.name.split('.')[0]), {
       default: "path"
     });
@@ -829,7 +829,7 @@ function UploadSong() {
         // console.log('Upload is ' + progress + '% done');
         switch (snapshot.state) {
           case 'paused':
-            console.log('Upload is paused');
+            // console.log('Upload is paused');
             break;
           case 'running':
             console.log('Upload is running');
@@ -841,11 +841,11 @@ function UploadSong() {
         // https://firebase.google.com/docs/storage/web/handle-errors
         switch (error.code) {
           case 'storage/unauthorized':
-            console.log("unauthorized")
+            // console.log("unauthorized")
             // User doesn't have permission to access the object
             break;
           case 'storage/canceled':
-            console.log("cancaled")
+            // console.log("cancaled")
             // User canceled the upload
             break;
 
@@ -860,7 +860,7 @@ function UploadSong() {
       () => {
         // Upload completed successfully, now we can get the download URL
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          console.log('File available at', downloadURL);
+          // console.log('File available at', downloadURL);
           setOriginalUpload(downloadURL)
           setUploadButton(<input type="file" id="myFile" allow="audio/mp3" name="filename" onChange={(e) => handleFile(e)} disabled></input>)
         });
@@ -892,7 +892,7 @@ function UploadSong() {
 function UploadCover() {
   const artist = useParams()['username'];  // The original artist
   const song = useParams()['song'];
-  console.log("This ARTIST is " + artist);
+  // console.log("This ARTIST is " + artist);
   const [percent, setPercent] = React.useState(null);
   const [coverUpload, setCoverUpload] = React.useState(null);
   const [songName, setSongName] = React.useState(null);
@@ -916,7 +916,7 @@ function UploadCover() {
   } else {
     undashedSong = song;
   }
-  console.log(undashedSong)
+  // console.log(undashedSong)
 
   // React.useEffect(() => {
   //   const storage = getStorage();
@@ -1014,10 +1014,10 @@ function UploadCover() {
         // console.log('Upload is ' + progress + '% done');
         switch (snapshot.state) {
           case 'paused':
-            console.log('Upload is paused');
+            // console.log('Upload is paused');
             break;
           case 'running':
-            console.log('Upload is running');
+            // console.log('Upload is running');
             break;
         }
       }, 
@@ -1026,18 +1026,18 @@ function UploadCover() {
         // https://firebase.google.com/docs/storage/web/handle-errors
         switch (error.code) {
           case 'storage/unauthorized':
-            console.log("unauthorized")
+            // console.log("unauthorized")
             // User doesn't have permission to access the object
             break;
           case 'storage/canceled':
-            console.log("cancaled")
+            // console.log("cancaled")
             // User canceled the upload
             break;
 
           // ...
 
           case 'storage/unknown':
-            console.log("unknown")
+            // console.log("unknown")
             // Unknown error occurred, inspect error.serverResponse
             break;
         }
@@ -1045,7 +1045,7 @@ function UploadCover() {
       () => {
         // Upload completed successfully, now we can get the download URL
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          console.log('File available at', downloadURL);
+          // console.log('File available at', downloadURL);
           setCoverUpload(downloadURL)
         });
       }
