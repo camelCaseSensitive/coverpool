@@ -187,7 +187,7 @@ function App() {
                 if(username._node.value_ == newUsername){
                   setUsernameAvailable(false)
                   setAvailabilityMessage("Sorry that username is already taken")
-                  console.log("MATCH")
+                  // console.log("MATCH")
                 }
               })
             })
@@ -816,6 +816,9 @@ function UploadSong() {
       default: "path"
     });
 
+    let feedMessage = globalUserName + " uid: " + auth.currentUser.uid + " uploaded " + file.name.split('.')[0];
+    dbSet(dbRef(rtdb, "/activity/" + Date.now()), feedMessage)
+
     const uploadTask = uploadBytesResumable(storageRef, file, metadata);
 
     uploadTask.on('state_changed',
@@ -997,6 +1000,9 @@ function UploadCover() {
       // [auth.currentUser.displayName]: auth.currentUser.uid + '/covers/' + artist + "/" + file.name
       [globalUserName]: auth.currentUser.uid + '/covers/' + artist + "/" + undashedSong + "/" + file.name
     });
+
+    let feedMessage = globalUserName + "uid: " + auth.currentUser.uid + " covered " + undashedSong;
+    dbSet(dbRef(rtdb, "/activity/" + Date.now()), feedMessage)
 
     const uploadTask = uploadBytesResumable(storageRef, file, metadata);
 
