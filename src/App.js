@@ -270,6 +270,7 @@ class Home extends React.Component {
         <SongPlayer songSource={'https://firebasestorage.googleapis.com/v0/b/coverpool-c532b.appspot.com/o/7R5T6CBpJHZF1wITzyLgWhvdfEI3%2Fcovers%2Fdoahnean%2Fdandelion%2Fdandelion%20written%20by%20doahnean%20and%20performed%20by%20mallard%20westcott%20on%20banjo.mp3?alt=media&token=12198219-0485-4018-870c-31a816f66665'} songName = "Dandelion" />
 
         <h3>User Activity: </h3>
+        <p><a href="/user/girlsatthecarnival">girlsatthecarnival</a> uploaded <a href="/user/girlsatthecarnival/originals/Your-cat-Demo-2">Your cat Demo 2</a></p>
         <p><a href="/user/bentzboy887">bentzboy887</a> uploaded <a href="/user/bentzboy887/originals/T.M.L">T.M.L</a></p>
         <p><a href="/user/sammy77">sammy77</a> uploaded <a href="/user/sammy77/originals/bullshit-baby">bullshit baby</a></p>
         <p><a href="/user/bentzboy887">bentzboy887</a> posted a <a href="/user/bentzboy887/covers/sammy77/kill-rock-stars-2"> cover of kill rock stars 2 </a> by <a href="/user/sammy77">sammy77</a></p>
