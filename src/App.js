@@ -271,6 +271,7 @@ class Home extends React.Component {
 
         <h3>User Activity: </h3>
         <p><a href="/user/bentzboy887">bentzboy887</a> uploaded <a href="/user/bentzboy887/originals/T.M.L">T.M.L</a></p>
+        <p><a href="/user/sammy77">sammy77</a> uploaded <a href="/user/sammy77/originals/bullshit-baby">bullshit baby</a></p>
         <p><a href="/user/bentzboy887">bentzboy887</a> posted a <a href="/user/bentzboy887/covers/sammy77/kill-rock-stars-2"> cover of kill rock stars 2 </a> by <a href="/user/sammy77">sammy77</a></p>
         <p><a href="/user/sammy77">sammy77</a> uploaded <a href="/user/sammy77/originals/allright">allright</a></p>
         <p><a href="/user/sammy77">sammy77</a> posted a <a href="/user/sammy77/covers/mott/Bald-patch"> cover of Bald patch </a> by <a href="/user/mott">mott</a></p>
