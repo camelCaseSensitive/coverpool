@@ -266,10 +266,12 @@ class Home extends React.Component {
       <div className="Home">
         <h2>Home</h2>
         <h3>Featured Cover: </h3>
+        <img src="https://lh3.googleusercontent.com/a/AATXAJzac_fBiFFI3zcYtChyKdQkBEDozTikdRtRhR-z=s96-c" style={{borderRadius: "100%"}}></img>
         <a href="/user/mallardwest/covers/doahnean/dandelion"> doahnean - dandelion (cover by mallardwest) </a> 
         <SongPlayer songSource={'https://firebasestorage.googleapis.com/v0/b/coverpool-c532b.appspot.com/o/7R5T6CBpJHZF1wITzyLgWhvdfEI3%2Fcovers%2Fdoahnean%2Fdandelion%2Fdandelion%20written%20by%20doahnean%20and%20performed%20by%20mallard%20westcott%20on%20banjo.mp3?alt=media&token=12198219-0485-4018-870c-31a816f66665'} songName = "Dandelion" />
 
         <h3>User Activity: </h3>
+        <p><a href="/user/wearehere349">wearehere349</a> uploaded <a href="/user/wearehere349/originals/Somewhere-Nice">Somewhere Nice</a></p>
         <p><a href="/user/Anry">Anry</a> uploaded <a href="/user/Anry/originals/Wordle">Wordle</a></p>
         <p><a href="/user/Anry">Anry</a> posted a <a href="/user/Anry/Covers/isaac/Dreams"> cover of Dreams </a> by <a href="/user/isaac">isaac</a></p>
         <p><a href="/user/winnower">winnower</a> uploaded <a href="/user/winnower/originals/fling-me-into-the-sun">fling me into the sun</a></p>
@@ -380,7 +382,7 @@ function UserProfile() {
       // console.log(docSnap.data())
       uid = docSnap.data().uid;
       setUserPic(docSnap.data().propic)
-      // console.log(docSnap.data().propic)
+      console.log(docSnap.data().propic)
     }).then(() => {
       const storage = getStorage();
       const originalsRef = ref(storage, uid + '/originals');
@@ -505,6 +507,7 @@ function UserOriginal() {
   const user = useParams()['username']
   const [songComponent, setSongComponent] = React.useState(null);
   const [coversComponent, setCoversComponent] = React.useState(<p>No covers yet</p>);
+  const [songInfo, setSongInfo] = React.useState(null);
   let coveredBy = ["Allen", "Brian", "Cindy", "Daniel"];
   let uid;
   // console.log(song)
@@ -564,6 +567,10 @@ function UserOriginal() {
       }
       if(coversArray.length > 0) setCoversComponent(coversArray)
     })
+
+    getDoc(doc(db, "users/" + user + "/Originals/" + undashedSong + "/Info/SongInfo")).then((docSnap) => {
+      if(docSnap.data()) setSongInfo(<p>{docSnap.data().Lyrics}</p>)
+    })
     // .then(() => {
     //   const storage = getStorage();
     //   const itemRef = ref(storage, uid + '/originals/'+ song + ".mp3");
@@ -582,6 +589,7 @@ function UserOriginal() {
       <div className="Original">
         <h2>{undashedSong}</h2>
         <div>{songComponent}</div>
+        <div style={{whiteSpace: "pre-wrap"}}>{songInfo}</div>
         <h3>Cover Versions by</h3>
         <nav>
           {coversComponent}
@@ -594,6 +602,17 @@ function UserOriginal() {
       <div className="Original">
         <h2>{undashedSong}</h2>
         <div>{songComponent}</div>
+        {/* <input></input> */}
+        <p>Description, Lyics, Tabs etc.</p>
+        <textarea id="songInfo" style={{whiteSpace: "pre-wrap"}}></textarea>
+        <button onClick={() => {
+          const infoRef = collection(db, "users/" + globalUserName + "/Originals/" + undashedSong + "/Info/");
+          setSongInfo(document.getElementById("songInfo").value)
+          setDoc(doc(infoRef, "SongInfo"), {
+            Lyrics: document.getElementById("songInfo").value
+          });
+        }}>SAVE</button>
+        <div style={{whiteSpace: "pre-wrap"}}>{songInfo}</div>
         <h3>Cover Versions by</h3>
         <nav className="Original">
           {coversComponent}
