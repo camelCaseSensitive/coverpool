@@ -370,6 +370,7 @@ function UserProfile() {
   const [userPic, setUserPic] = React.useState(null);
   const [userOriginals, setUserOriginals] = React.useState(null);
   const [userCovers, setUserCovers] = React.useState(null);
+  const [aboutMe, setAboutMe] = React.useState(null);
 
   let originalsComponentArray = [];
   let coversComponentArray = [];
@@ -468,27 +469,68 @@ function UserProfile() {
         // Uh-oh, an error occurred!
       });
     })
+
+    getDoc(doc(db, "users/" + username + "/About/UserInfo/")).then((docSnap) => {
+      if(docSnap.data()) setAboutMe(<p>{docSnap.data().Info}</p>)
+      console.log(aboutMe)
+    })
   }, [username])
 
-  return (
-    <div className="UserProfile">
-      <h2>{username}</h2>
-      <img src={userPic}/>
-      <h3>Originals</h3>
-      <nav>
-        <ul>
-          {userOriginals}
-        </ul>
-      </nav>
+  if(username == globalUserName) {
+    return (
+      <div className="UserProfile">
+        <h2>{username}</h2>
+        <img src={userPic}/>
 
-      <h3>Covers</h3>
-      <nav>
-        <ul>
-          {userCovers}
-        </ul>
-      </nav>
-    </div>
-  );
+        <p>About me</p>
+        <textarea id="userInfo" style={{whiteSpace: "pre-wrap"}}></textarea>
+        <button onClick={() => {
+          const aboutRef = collection(db, "users/" + globalUserName + "/About/");
+          setAboutMe(document.getElementById("userInfo").value)
+          setDoc(doc(aboutRef, "UserInfo"), {
+            Info: document.getElementById("userInfo").value
+          });
+        }}>SAVE</button>
+        <div style={{whiteSpace: "pre-wrap"}}>{aboutMe}</div>
+
+        <h3>Originals</h3>
+        <nav>
+          <ul>
+            {userOriginals}
+          </ul>
+        </nav>
+
+        <h3>Covers</h3>
+        <nav>
+          <ul>
+            {userCovers}
+          </ul>
+        </nav>
+      </div>
+    );
+  } else {
+    return (
+      <div className="UserProfile">
+        <h2>{username}</h2>
+        <img src={userPic}/>
+        <h3>About:</h3>
+        <div style={{whiteSpace: "pre-wrap"}}>{aboutMe}</div>
+        <h3>Originals</h3>
+        <nav>
+          <ul>
+            {userOriginals}
+          </ul>
+        </nav>
+
+        <h3>Covers</h3>
+        <nav>
+          <ul>
+            {userCovers}
+          </ul>
+        </nav>
+      </div>
+    );
+  }
 }
 
 function UserContent() {
