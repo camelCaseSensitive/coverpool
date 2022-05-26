@@ -271,7 +271,7 @@ class Home extends React.Component {
         <SongPlayer songSource={'https://firebasestorage.googleapis.com/v0/b/coverpool-c532b.appspot.com/o/7R5T6CBpJHZF1wITzyLgWhvdfEI3%2Fcovers%2Fdoahnean%2Fdandelion%2Fdandelion%20written%20by%20doahnean%20and%20performed%20by%20mallard%20westcott%20on%20banjo.mp3?alt=media&token=12198219-0485-4018-870c-31a816f66665'} songName = "Dandelion" />
 
         <h3>User Activity: </h3>
-        <p><a href="/user/buryingvarian">buryingvarian</a> uploaded <a href="/user/buryingvarian/originals/talk-of-ur-ear">talk of ur ear</a></p>
+        <p><a href="/user/buryingvarian">buryingvarian</a> uploaded <a href="/user/buryingvarian/originals/talk-off-ur-ear">talk off ur ear</a></p>
         <p><a href="/user/wearehere349">wearehere349</a> uploaded <a href="/user/wearehere349/originals/Somewhere-Nice">Somewhere Nice</a></p>
         <p><a href="/user/Anry">Anry</a> uploaded <a href="/user/Anry/originals/Wordle">Wordle</a></p>
         <p><a href="/user/Anry">Anry</a> posted a <a href="/user/Anry/Covers/isaac/Dreams"> cover of Dreams </a> by <a href="/user/isaac">isaac</a></p>
