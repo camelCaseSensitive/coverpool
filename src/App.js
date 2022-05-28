@@ -271,6 +271,7 @@ class Home extends React.Component {
         <SongPlayer songSource={'https://firebasestorage.googleapis.com/v0/b/coverpool-c532b.appspot.com/o/7R5T6CBpJHZF1wITzyLgWhvdfEI3%2Fcovers%2Fdoahnean%2Fdandelion%2Fdandelion%20written%20by%20doahnean%20and%20performed%20by%20mallard%20westcott%20on%20banjo.mp3?alt=media&token=12198219-0485-4018-870c-31a816f66665'} songName = "Dandelion" />
 
         <h3>User Activity: </h3>
+        <p><a href="/user/Anry">Anry</a> posted a <a href="/user/Anry/Covers/buryingvarian/talk-off-ur-ear"> cover of talk off ur ear </a> by <a href="/user/buryingvarian">buryingvarian</a></p>
         <p><a href="/user/Anry">Anry</a> posted a <a href="/user/Anry/Covers/mallardwest/Slow-On-Slow-Forth"> cover of Slow On So Forth </a> by <a href="/user/mallardwest">mallardwest</a></p>
         <p><a href="/user/mallardwest">mallardwest</a> uploaded <a href="/user/mallardwest/originals/Slow-On-Slow-Forth">Slow On Slow Forth</a></p>
         <p><a href="/user/buryingvarian">buryingvarian</a> uploaded <a href="/user/buryingvarian/originals/talk-off-ur-ear">talk off ur ear</a></p>
