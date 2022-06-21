@@ -266,11 +266,12 @@ class Home extends React.Component {
       <div className="Home">
         <h2>Home</h2>
         <h3>Featured Cover: </h3>
-        <img src="https://lh3.googleusercontent.com/a/AATXAJzac_fBiFFI3zcYtChyKdQkBEDozTikdRtRhR-z=s96-c" style={{borderRadius: "100%"}}></img>
-        <a href="/user/mallardwest/covers/doahnean/dandelion"> doahnean - dandelion (cover by mallardwest) </a> 
-        <SongPlayer songSource={'https://firebasestorage.googleapis.com/v0/b/coverpool-c532b.appspot.com/o/7R5T6CBpJHZF1wITzyLgWhvdfEI3%2Fcovers%2Fdoahnean%2Fdandelion%2Fdandelion%20written%20by%20doahnean%20and%20performed%20by%20mallard%20westcott%20on%20banjo.mp3?alt=media&token=12198219-0485-4018-870c-31a816f66665'} songName = "Dandelion" />
+        <img src="https://i.imgur.com/yAZtxaq.png" style={{borderRadius: "100%"}}></img>
+        <a href="/user/bentzboy887/covers/sammy77/kill-rock-stars-2"> sammy77 - kill rock stars 2 (cover by bentzboy887) </a> 
+        <SongPlayer songSource={'https://firebasestorage.googleapis.com/v0/b/coverpool-c532b.appspot.com/o/6sTnYDIWzbXSa5XJXKnr6KRPJ0G2%2Fcovers%2Fsammy77%2Fkill%20rock%20stars%202%2Fkillrockstars.mp3?alt=media&token=d7fe50bd-722c-4cbb-89c4-bf4418055802'} songName = "kill-rock-stars-2" />
 
         <h3>User Activity: </h3>
+        <p><a href="/user/Anry">Anry</a> posted a <a href="/user/Anry/Covers/buryingvarian/pacing-"> cover of pacing </a> by <a href="/user/buryingvarian">buryingvarian</a></p>
         <p><a href="/user/Anry">Anry</a> uploaded <a href="/user/Anry/originals/Hot-Girl-Summer">Hot Girl Summer</a></p>
         <p><a href="/user/hillview73">hillview73</a> uploaded <a href="/user/hillview73/originals/love-will-keep-me-strong">love will keep me strong</a></p>
         <p><a href="/user/buryingvarian">buryingvarian</a> uploaded <a href="/user/buryingvarian/originals/my-insides-">my insides</a></p>
