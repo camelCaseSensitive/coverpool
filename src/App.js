@@ -271,6 +271,7 @@ class Home extends React.Component {
         <SongPlayer songSource={'https://firebasestorage.googleapis.com/v0/b/coverpool-c532b.appspot.com/o/6sTnYDIWzbXSa5XJXKnr6KRPJ0G2%2Fcovers%2Fsammy77%2Fkill%20rock%20stars%202%2Fkillrockstars.mp3?alt=media&token=d7fe50bd-722c-4cbb-89c4-bf4418055802'} songName = "kill-rock-stars-2" />
 
         <h3>User Activity: </h3>
+        <p><a href="/user/BarknoorZ">BarknoorZ</a> posted a <a href="/user/BarknoorZ/Covers/Anry/Marsha-at-the-Door"> cover of Marsha At The Door </a> by <a href="/user/Anry">Anry</a></p>
         <p><a href="/user/winnower">winnower</a> posted a <a href="/user/winnower/covers/buryingvarian/my-insides-"> cover of my insides </a> by <a href="/user/buryingvarian">buryingvarian</a></p>
         <p><a href="/user/Anry">Anry</a> posted a <a href="/user/Anry/Covers/buryingvarian/pacing-"> cover of pacing </a> by <a href="/user/buryingvarian">buryingvarian</a></p>
         <p><a href="/user/Anry">Anry</a> uploaded <a href="/user/Anry/originals/Hot-Girl-Summer">Hot Girl Summer</a></p>
