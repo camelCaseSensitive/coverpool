@@ -266,11 +266,12 @@ class Home extends React.Component {
       <div className="Home">
         <h2>Home</h2>
         <h3>Featured Cover: </h3>
-        <img src="https://i.imgur.com/yAZtxaq.png" style={{borderRadius: "100%"}}></img>
-        <a href="/user/bentzboy887/covers/sammy77/kill-rock-stars-2"> sammy77 - kill rock stars 2 (cover by bentzboy887) </a> 
-        <SongPlayer songSource={'https://firebasestorage.googleapis.com/v0/b/coverpool-c532b.appspot.com/o/6sTnYDIWzbXSa5XJXKnr6KRPJ0G2%2Fcovers%2Fsammy77%2Fkill%20rock%20stars%202%2Fkillrockstars.mp3?alt=media&token=d7fe50bd-722c-4cbb-89c4-bf4418055802'} songName = "kill-rock-stars-2" />
+        <img src="https://lh3.googleusercontent.com/a-/AOh14Gj6ZFmEwPkckIiju-t2Y34PS3B0oIOylxyzOlg=s96-c" style={{borderRadius: "100%"}}></img>
+        <a href="/user/Anry/Covers/mallardwest/Slow-On-Slow-Forth"> mallardwest - Slow On Slow Forth</a> 
+        <SongPlayer songSource={'https://firebasestorage.googleapis.com/v0/b/coverpool-c532b.appspot.com/o/X1NHM81LjfQNFfAU4TqISTnOXBp1%2Fcovers%2Fmallardwest%2FSlow%20On%20Slow%20Forth%2Fso%20on%20so%20forth.mp3?alt=media&token=531db42c-c6e6-4d81-b771-7e306a9650eb'} songName = "Slow-On-Slow-Forth" />
 
         <h3>User Activity: </h3>
+        <p><a href="/user/maddeypuppets">maddeypuppets</a> uploaded <a href="/user/maddeypuppets/originals/Telephone">Telephone</a></p>
         <p><a href="/user/BarknoorZ">BarknoorZ</a> posted a <a href="/user/BarknoorZ/Covers/Anry/Marsha-at-the-Door"> cover of Marsha At The Door </a> by <a href="/user/Anry">Anry</a></p>
         <p><a href="/user/winnower">winnower</a> posted a <a href="/user/winnower/covers/buryingvarian/my-insides-"> cover of my insides </a> by <a href="/user/buryingvarian">buryingvarian</a></p>
         <p><a href="/user/Anry">Anry</a> posted a <a href="/user/Anry/Covers/buryingvarian/pacing-"> cover of pacing </a> by <a href="/user/buryingvarian">buryingvarian</a></p>
